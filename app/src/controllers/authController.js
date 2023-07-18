@@ -1,6 +1,6 @@
 "use strict";
 
-const User = require('../models/User');
+const User = require('../models/user/User.service');
 const jwt = require("jsonwebtoken");
 require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
 const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기

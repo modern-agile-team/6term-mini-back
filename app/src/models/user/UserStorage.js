@@ -1,6 +1,6 @@
 "user strict";
 
-const db = require("../config/db");
+const db = require("../../config/db");
 
 class UserStorage {
   async login(login_id, pw) {

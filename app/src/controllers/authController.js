@@ -89,4 +89,18 @@ function checkToken(req, res, next) {
   }
 }
 
-module.exports = { login, checkToken };
+// DB로 refreshtoken을 저장
+async function saveRefreshToken(req, res) {
+  const { refreshToken } = req.body;
+
+  try {
+    const nUser = new User(req.body);
+    const response = await nUser.saveRefreshToken(refreshToken);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "리프레시 토큰 저장 오류" });
+  }
+}
+
+module.exports = { login, checkToken, saveRefreshToken };

@@ -6,6 +6,7 @@ const authController = require('../controllers/authController');
 
 router.post('/login', authController.login); // 로그인, 토큰 발급
 router.post('/register', authController.register); // 회원가입
+router.get('/loginId', authController.findLoginId); // 아이디 찾기
 
 router.get('/check', authController.checkToken); // 토큰 확인 (유효 여부)
 

@@ -11,10 +11,11 @@ dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// CORS 설정
+app.use(cors());
+
 // 라우터 연결
 app.use("/auth", authRoutes);
 
-// CORS 설정
-app.use(cors({ origin: "http://localhost:3000" }));
 
 module.exports = app;

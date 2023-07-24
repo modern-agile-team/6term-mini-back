@@ -1,27 +1,54 @@
 "user strict";
 
 const UserStorage = require("./UserStorage");
+const jwt = require("jsonwebtoken");
+require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
+const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
+const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
+const refreshTokenExpiresIn = "7d"; // 리프레시 토큰 만료 시간
 
 class User {
   constructor(body) {
     this.body = new UserStorage(body);
   }
 
-  async login(login_id, pw) {
+  async login(loginId, pw) {
     try {
-      const response = await this.body.login(login_id, pw);
-      return response;
+      const userInfo = await this.body.login(loginId, pw);
+      // if (!userInfo) {
+      //   return { success: false, msg: "존재하지 않는 아이디입니다." };
+      // }
+      // if (pw !== userInfo.pw) {
+      //   return { success: false, msg: "비밀번호가 틀렸습니다." };
+      // }
+
+      // const accessTokenPayload = { login_id: userInfo.login_id };
+      // const refreshTokenPayload = { login_id: userInfo.login_id, refresh_token: true };
+
+      // const accessToken = jwt.sign(accessTokenPayload, secretKey, { expiresIn: accessTokenExpiresIn }); // 액세스 토큰 발급
+      // const refreshToken = jwt.sign(refreshTokenPayload, secretKey, { expiresIn: refreshTokenExpiresIn }); // 리프레시 토큰 발급
+
+      return userInfo;
     } catch (err) {
       return { success: false, msg: "로그인 에러" };
     }
   }
 
-  async register(login_id, email, pw) {
+  async register(loginId, email, pw) {
     try {
-      const response = await this.body.register(login_id, email, pw);
+      const response = await this.body.register(loginId, email, pw);
       return response;
     } catch (err) {
       return { success: false, msg: "회원가입 에러" };
+    }
+  }
+
+  async findLoginId(email) {
+    try {
+      const response = await this.body.findLoginId(email);
+      return response;
+    } catch (err) {
+      return { success: false, msg: "아이디 찾기 에러" };
     }
   }
 

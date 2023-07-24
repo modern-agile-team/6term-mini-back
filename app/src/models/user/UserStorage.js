@@ -3,22 +3,32 @@
 const db = require("../../config/db");
 
 class UserStorage {
-  async login(login_id, pw) {
+  async login(loginId, pw) {
     return new Promise((resolve, reject) => {
       const query = "SELECT * FROM user WHERE login_id = ?;";
-      db.query(query, [login_id], (err, data) => {
+      db.query(query, [loginId], (err, data) => {
         if (err) reject(`${err}`);
         resolve(data[0]);
       });
     });
   }
 
-  async register(login_id, email, pw) {
+  async register(loginId, email, pw) {
     return new Promise((resolve, reject) => {
       const query = "INSERT INTO user (login_id, email, pw) VALUES (?, ?, ?);";
-      db.query(query, [login_id, email, pw], (err, data) => {
+      db.query(query, [loginId, email, pw], (err, data) => {
         if (err) reject(`${err}`);
         resolve({ success: true, msg: "회원가입 완료" });
+      });
+    });
+  }
+
+  async findLoginId(email) {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT login_id FROM user WHERE email = ?;";
+      db.query(query, [email], (err, data) => {
+        if (err) reject(`${err}`);
+        resolve(data[0]);
       });
     });
   }

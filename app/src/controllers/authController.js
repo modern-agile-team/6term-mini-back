@@ -8,19 +8,19 @@ const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
 const refreshTokenExpiresIn = "7d"; // 리프레시 토큰 만료 시간
 
 async function login(req, res) {
-  const { login_id, pw } = req.body; // 로그인 요청에서 아이디와 비밀번호 가져오기
+  const { loginId, pw } = req.body; // 로그인 요청에서 아이디와 비밀번호 가져오기
 
   try {
     const nUser = new User(req.body);
-    const user = await nUser.login(login_id, pw); // 유저 정보 가져오기
+    const user = await nUser.login(loginId, pw); // 유저 정보 가져오기
 
     if (!user) { // 유저가 없으면
-      return res.status(401).json({ error: "유저 없음" });
+      return res.status(401).json({ error: "존재하지 않는 아이디 입니다." });
     }
 
     const passwordMatch = pw === user.pw; // 비밀번호 비교
     if (!passwordMatch) {
-      return res.status(401).json({ error: "비밀번호가 틀렸습니다!" });
+      return res.status(401).json({ error: "비밀번호가 틀렸습니다." });
     }
 
     const accessTokenPayload = { login_id: user.login_id };
@@ -42,11 +42,11 @@ async function login(req, res) {
 }
 
 async function register(req, res) {
-  const { login_id, email, pw } = req.body; // 회원가입 요청에서 아이디, 이메일, 비밀번호 가져오기
+  const { loginId, email, pw } = req.body; // 회원가입 요청에서 아이디, 이메일, 비밀번호 가져오기
 
   try {
     const nUser = new User(req.body);
-    const response = await nUser.register(login_id, email, pw); // 회원가입
+    const response = await nUser.register(loginId, email, pw); // 회원가입
 
     if (!response.success) { // 회원가입 실패
       return res.status(401).json({ error: response.msg });
@@ -70,7 +70,7 @@ function checkToken(req, res, next) {
     const decoded = jwt.verify(token, secretKey); // 토큰 확인
 
     if (decoded) { // 토큰이 유효하면
-      return res.status(200).json({ msg: "유효한 토큰입니다!" });
+      return next();
     } else {
       return res.status(401).json({ error: "유효하지 않은 토큰입니다" });
     }

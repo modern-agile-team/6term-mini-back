@@ -16,12 +16,30 @@ class User {
     }
   }
 
+  async register(login_id, email, pw) {
+    try {
+      const response = await this.body.register(login_id, email, pw);
+      return response;
+    } catch (err) {
+      return { success: false, msg: "회원가입 에러" };
+    }
+  }
+
   async saveRefreshToken(refreshToken) {
     try {
       const response = await this.body.saveRefreshToken(refreshToken);
       return response;
     } catch (err) {
       return { success: false, msg: "리프레시 토큰 저장 에러" };
+    }
+  }
+
+  async checkRefreshToken(refreshToken) {
+    try {
+      const response = await this.body.checkRefreshToken(refreshToken);
+      return response;
+    } catch (err) {
+      return { success: false, msg: "리프레시 토큰 검증 에러" };
     }
   }
 }

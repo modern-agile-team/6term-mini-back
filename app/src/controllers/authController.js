@@ -41,6 +41,24 @@ async function login(req, res) {
   }
 }
 
+async function register(req, res) {
+  const { login_id, email, pw } = req.body; // 회원가입 요청에서 아이디, 이메일, 비밀번호 가져오기
+
+  try {
+    const nUser = new User(req.body);
+    const response = await nUser.register(login_id, email, pw); // 회원가입
+
+    if (!response.success) { // 회원가입 실패
+      return res.status(401).json({ error: response.msg });
+    }
+
+    res.status(200).json({ msg: response.msg }); // 회원가입 성공
+  } catch (error) { // 에러 처리
+    console.error(error);
+    res.status(500).json({ error: "회원가입 오류" });
+  }
+}
+
 function checkToken(req, res, next) {
   try {
     const token = req.headers.authorization; // Authorization 헤더에서 토큰 가져오기
@@ -103,4 +121,18 @@ async function saveRefreshToken(req, res) {
   }
 }
 
-module.exports = { login, checkToken, saveRefreshToken };
+// DB에서 refreshtoken을 검증
+async function checkRefreshToken(req, res) {
+  const { refreshToken } = req.body;
+
+  try {
+    const nUser = new User(req.body);
+    const response = await nUser.checkRefreshToken(refreshToken);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "리프레시 토큰 검증 오류" });
+  }
+}
+
+module.exports = { login, checkToken, saveRefreshToken, checkRefreshToken, register };

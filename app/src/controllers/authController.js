@@ -41,6 +41,23 @@ async function login(req, res) {
   }
 }
 
+async function logout(req, res) {
+  const { refreshToken } = req.body; // 로그아웃 요청에서 리프레시 토큰 가져오기
+
+  try {
+    const nUser = new User();
+    const response = await nUser.logout(refreshToken); // 로그아웃
+    if (!response.success) { // 로그아웃 실패
+      res.status(401).json({ error: response.msg });
+    } else {
+      res.status(200).json({ response }); // 로그아웃 성공
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "로그아웃 오류" });
+  }
+}
+
 async function register(req, res) {
   const { loginId, email, pw } = req.body; // 회원가입 요청에서 아이디, 이메일, 비밀번호 가져오기
 
@@ -206,4 +223,4 @@ async function checkRefreshToken(req, res) {
   }
 }
 
-module.exports = { login, register, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };
+module.exports = { login, logout, register, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };

@@ -34,6 +34,19 @@ class User {
     }
   }
 
+  async logout(refreshToken) {
+    try {
+      const response = await this.body.logout(refreshToken);
+      if (!response.success) {
+        return { success: false, msg: response.msg };
+      }
+
+      return response;
+    } catch (err) {
+      return { success: false, msg: "로그아웃 에러" };
+    }
+  }
+
   async register(loginId, email, pw) {
     try {
       const userExists = await this.checkUserLoginId(loginId);

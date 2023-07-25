@@ -13,6 +13,17 @@ class UserStorage {
     });
   }
 
+  async logout(refreshToken) {
+    return new Promise((resolve, reject) => {
+      const query = "DELETE FROM token WHERE refresh_token = ?;";
+      db.query(query, [refreshToken], (err, data) => {
+        if (err) reject(`${err}`);
+        if (data.affectedRows === 0) resolve({ success: false, msg: "refreshToken is not valid" });
+        resolve({ success: true, msg: "로그아웃 완료" });
+      });
+    });
+  }
+
   async register(loginId, email, pw) {
     return new Promise((resolve, reject) => {
       const query = "INSERT INTO user (login_id, email, pw) VALUES (?, ?, ?);";

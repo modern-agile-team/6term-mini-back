@@ -156,8 +156,8 @@ function checkToken(req, res, next) {
     }
 
     const decoded = jwt.verify(token, secretKey); // 토큰 확인
-
     if (decoded) { // 토큰이 유효하면
+      res.status(200).json({ msg: "토큰이 유효합니다" });
       return next();
     } else {
       return res.status(401).json({ error: "유효하지 않은 토큰입니다" });
@@ -212,7 +212,6 @@ async function saveRefreshToken(req, res) {
 // DB에서 refreshtoken을 검증
 async function checkRefreshToken(req, res) {
   const { refreshToken } = req.body;
-
   try {
     const nUser = new User(req.body);
     const response = await nUser.checkRefreshToken(refreshToken);

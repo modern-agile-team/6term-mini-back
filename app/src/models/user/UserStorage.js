@@ -89,7 +89,8 @@ class UserStorage {
       const query = "SELECT * FROM token WHERE refresh_token = ?;";
       db.query(query, [refreshToken], (err, data) => {
         if (err) reject(`${err}`);
-        resolve({ success: true, msg: "리프레시 토큰 검증 완료" });
+        if (data.length > 0) resolve({ success: true, msg: "리프레시 토큰 검증 완료" });
+        resolve({ success: false, msg: "refreshToken is not valid" });
       });
     });
   }

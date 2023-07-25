@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
 const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
 const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
-const refreshTokenExpiresIn = "7d"; // 리프레시 토큰 만료 시간
+const refreshTokenExpiresIn = "24h"; // 리프레시 토큰 만료 시간
 
 async function login(req, res) {
   const { loginId, pw } = req.body; // 로그인 요청에서 아이디와 비밀번호 가져오기
@@ -146,7 +146,7 @@ async function findPw(req, res) {
   }
 }
 
-function checkToken(req, res, next) {
+async function checkToken(req, res, next) {
   try {
     const token = req.headers.authorization; // Authorization 헤더에서 토큰 가져오기
 
@@ -177,19 +177,24 @@ function checkToken(req, res, next) {
           return res.status(401).json({ error: "유효하지 않은 리프레시 토큰입니다" });
         }
 
-        const newAccessTokenPayload = { id: decodedRefreshToken.id };
-        const newAccessToken = jwt.sign(newAccessTokenPayload, secretKey, { expiresIn: accessTokenExpiresIn });
+        // 리프레쉬 토큰 비교
+        const nUser = new User();
+        const refreshTokenExists = await nUser.checkRefreshToken(refreshToken);
 
-        return res.status(200).json({
-          msg: "액세스 토큰이 갱신되었습니다!",
-          accessToken: newAccessToken,
-        });
+        if (refreshTokenExists.success) {
+          const newAccessTokenPayload = { id: decodedRefreshToken.id };
+          const newAccessToken = jwt.sign(newAccessTokenPayload, secretKey, { expiresIn: accessTokenExpiresIn });
+
+          return res.status(200).json({
+            msg: "액세스 토큰이 갱신되었습니다!",
+            accessToken: newAccessToken,
+          });
+        }
       } catch (refreshError) {
         console.error(refreshError);
         return res.status(500).json({ error: "리프레시 토큰 검증 또는 발급 오류" });
       }
     }
-
     return res.status(500).json({ error: "잘못된 토큰입니다" });
   }
 }
@@ -214,6 +219,7 @@ async function checkRefreshToken(req, res) {
   try {
     const nUser = new User();
     const response = await nUser.checkRefreshToken(refreshToken);
+    console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);

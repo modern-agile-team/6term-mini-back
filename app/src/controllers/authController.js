@@ -22,9 +22,8 @@ async function login(req, res) {
     if (!passwordMatch) {
       return res.status(401).json({ error: "비밀번호가 틀렸습니다." });
     }
-
-    const accessTokenPayload = { loginId: user.loginId };
-    const refreshTokenPayload = { loginId: user.loginId, refreshToken: true };
+    const accessTokenPayload = { id: user.id };
+    const refreshTokenPayload = { id: user.id, refreshToken: true };
 
     const accessToken = jwt.sign(accessTokenPayload, secretKey, { expiresIn: accessTokenExpiresIn }); // 액세스 토큰 발급
     const refreshToken = jwt.sign(refreshTokenPayload, secretKey, { expiresIn: refreshTokenExpiresIn }); // 리프레시 토큰 발급
@@ -166,7 +165,7 @@ function checkToken(req, res, next) {
     if (error.name === "TokenExpiredError") {
       // 액세스 토큰이 만료되었을 때 리프레시 토큰을 사용하여 새로운 액세스 토큰 발급
       try {
-        const refreshToken = req.headers.refreshToken;
+        const refreshToken = req.headers.refreshtoken;
 
         if (!refreshToken) {
           return res.status(401).json({ error: "토큰이 만료되었습니다" });
@@ -178,7 +177,7 @@ function checkToken(req, res, next) {
           return res.status(401).json({ error: "유효하지 않은 리프레시 토큰입니다" });
         }
 
-        const newAccessTokenPayload = { loginId: decodedRefreshToken.loginId };
+        const newAccessTokenPayload = { id: decodedRefreshToken.id };
         const newAccessToken = jwt.sign(newAccessTokenPayload, secretKey, { expiresIn: accessTokenExpiresIn });
 
         return res.status(200).json({
@@ -200,7 +199,7 @@ async function saveRefreshToken(req, res) {
   const { refreshToken } = req.body;
 
   try {
-    const nUser = new User(req.body);
+    const nUser = new User();
     const response = await nUser.saveRefreshToken(refreshToken);
     return res.status(200).json(response);
   } catch (error) {
@@ -213,7 +212,7 @@ async function saveRefreshToken(req, res) {
 async function checkRefreshToken(req, res) {
   const { refreshToken } = req.body;
   try {
-    const nUser = new User(req.body);
+    const nUser = new User();
     const response = await nUser.checkRefreshToken(refreshToken);
     return res.status(200).json(response);
   } catch (error) {

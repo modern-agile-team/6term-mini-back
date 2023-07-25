@@ -1,4 +1,4 @@
-const mysql = require("mysql");
+const mysql = require("mysql2");
 require('dotenv').config(); // 환경 변수를 .env 파일에서 가져오기
 
 const db = mysql.createConnection({

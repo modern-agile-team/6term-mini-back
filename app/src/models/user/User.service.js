@@ -36,10 +36,44 @@ class User {
 
   async register(loginId, email, pw) {
     try {
+      const userExists = await this.checkUserLoginId(loginId);
+      if (userExists) {
+        return { success: false, msg: "이미 존재하는 아이디입니다." };
+      }
+
+      if (email) {
+        const emailExists = await this.checkUserEmail(email);
+        if (emailExists) {
+          return { success: false, msg: "이미 존재하는 이메일입니다." };
+        }
+      }
+
       const response = await this.body.register(loginId, email, pw);
+      if (!response.success) {
+        return { success: false, msg: response.msg };
+      }
+
       return response;
     } catch (err) {
       return { success: false, msg: "회원가입 에러" };
+    }
+  }
+
+  async checkUserLoginId(loginId) {
+    try {
+      const response = await this.body.checkUserLoginId(loginId);
+      return response;
+    } catch (err) {
+      return { success: false, msg: "유저 존재 여부 확인 에러" };
+    }
+  }
+
+  async checkUserEmail(email) {
+    try {
+      const response = await this.body.checkUserEmail(email);
+      return response;
+    } catch (err) {
+      return { success: false, msg: "이메일 존재 여부 확인 에러" };
     }
   }
 

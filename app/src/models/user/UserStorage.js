@@ -18,7 +18,27 @@ class UserStorage {
       const query = "INSERT INTO user (login_id, email, pw) VALUES (?, ?, ?);";
       db.query(query, [loginId, email, pw], (err, data) => {
         if (err) reject(`${err}`);
-        resolve({ success: true, msg: "회원가입 완료" });
+        resolve({ success: true, msg: "회원가입 완료", loginId, email });
+      });
+    });
+  }
+
+  async checkUserLoginId(loginId) {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT EXISTS (SELECT * FROM user WHERE login_id = ?) AS success;";
+      db.query(query, [loginId], (err, data) => {
+        if (err) reject(`${err}`);
+        resolve(data[0].success);
+      });
+    });
+  }
+
+  async checkUserEmail(email) {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT EXISTS (SELECT * FROM user WHERE email = ?) AS success;";
+      db.query(query, [email], (err, data) => {
+        if (err) reject(`${err}`);
+        resolve(data[0].success);
       });
     });
   }

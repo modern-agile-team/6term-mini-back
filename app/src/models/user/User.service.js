@@ -83,6 +83,14 @@ class User {
     }
   }
 
+  async findPw(loginId, email) {
+    try {
+      return await this.body.findPw(loginId, email);
+    } catch (err) {
+      return { success: false, msg: "비밀번호 찾기 에러" };
+    }
+  }
+
   async saveRefreshToken(refreshToken) {
     try {
       return await this.body.saveRefreshToken(refreshToken);

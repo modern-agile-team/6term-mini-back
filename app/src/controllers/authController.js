@@ -112,6 +112,24 @@ async function findLoginId(req, res) {
   }
 }
 
+async function findPw(req, res) {
+  try {
+    const user = new User();
+    const { loginId, email } = req.body;
+    const pw = await user.findPw(loginId, email);
+
+    if (pw) {
+      res.status(200).json({ msg: "비밀번호 찾기 완료", pw})
+    } else {
+      res.status(401).json({ error: "아이디 혹은 이메일이 일치하지 않습니다." });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "비밀번호 찾기 오류" });
+  }
+}
+
 function checkToken(req, res, next) {
   try {
     const token = req.headers.authorization; // Authorization 헤더에서 토큰 가져오기
@@ -188,4 +206,4 @@ async function checkRefreshToken(req, res) {
   }
 }
 
-module.exports = { login, register, checkUserLoginId,checkUserEmail,findLoginId, checkToken, saveRefreshToken, checkRefreshToken };
+module.exports = { login, register, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };

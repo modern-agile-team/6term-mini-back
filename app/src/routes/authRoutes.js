@@ -10,6 +10,7 @@ router.get('/usersId', authController.checkUserLoginId); // 아이디 중복 확
 router.get('/usersEmail', authController.checkUserEmail); // 이메일 중복 확인
 
 router.get('/loginId', authController.findLoginId); // 아이디 찾기
+router.get('/pw', authController.findPw); // 비밀번호 찾기
 
 router.get('/check', authController.checkToken); // 토큰 확인 (유효 여부)
 

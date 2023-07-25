@@ -60,18 +60,18 @@ async function register(req, res) {
 }
 
 async function findLoginId(req, res) {
-  const { email } = req.body; // 아이디 찾기 요청에서 이메일 가져오기
-
   try {
-    const nUser = new User(req.body);
-    const response = await nUser.findLoginId(email); // 아이디 찾기
+    const user = new User();
+    const { email } = req.body;
+    const loginId = await user.findLoginId(email);
 
-    if (!response.login_id) { // 아이디가 없으면
-      return res.status(401).json({ error: "이 이메일로 가입하지 않았습니다." });
+    if (loginId) {
+      res.status(200).json({ msg: "아이디 찾기 완료", loginId})
+    } else {
+      res.status(401).json({ error: "존재하지 않는 이메일입니다." });
     }
 
-    res.status(200).json({ login_id: response.login_id }); // 아이디 찾기 성공
-  } catch (error) { // 에러 처리
+  } catch (error) {
     console.error(error);
     res.status(500).json({ error: "아이디 찾기 오류" });
   }

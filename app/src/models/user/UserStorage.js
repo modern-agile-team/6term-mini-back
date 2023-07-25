@@ -28,7 +28,7 @@ class UserStorage {
       const query = "SELECT login_id FROM user WHERE email = ?;";
       db.query(query, [email], (err, data) => {
         if (err) reject(`${err}`);
-        resolve(data[0]);
+        resolve(data[0]?.login_id || null); // data[0]이 존재하면 data[0].login_id를, 존재하지 않으면 null을 반환
       });
     });
   }

@@ -65,14 +65,32 @@ async function checkUserLoginId(req, res) {
     const userExists = await user.checkUserLoginId(loginId);
 
     if (userExists) {
-      res.status(200).json({ msg: "이미 존재하는 아이디입니다." });
+      res.status(401).json({ msg: "이미 존재하는 아이디입니다." });
     } else {
-      res.status(200).json({ error: "사용 가능한 아이디입니다." });
+      res.status(200).json({ msg: "사용 가능한 아이디입니다." });
     }
 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "아이디 중복 검사 오류" });
+  }
+}
+
+async function checkUserEmail(req, res) {
+  try {
+    const user = new User();
+    const { email } = req.body;
+    const emailExists = await user.checkUserEmail(email);
+
+    if (emailExists) {
+      res.status(401).json({ msg: "이미 가입된 이메일입니다." });
+    } else {
+      res.status(200).json({ msg: "사용 가능한 이메일입니다." });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "이메일 중복 검사 오류" });
   }
 }
 
@@ -170,4 +188,4 @@ async function checkRefreshToken(req, res) {
   }
 }
 
-module.exports = { login, register, checkUserLoginId, findLoginId, checkToken, saveRefreshToken, checkRefreshToken };
+module.exports = { login, register, checkUserLoginId,checkUserEmail,findLoginId, checkToken, saveRefreshToken, checkRefreshToken };

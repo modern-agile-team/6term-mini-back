@@ -61,8 +61,7 @@ class User {
 
   async checkUserLoginId(loginId) {
     try {
-      const response = await this.body.checkUserLoginId(loginId);
-      return response;
+      return await this.body.checkUserLoginId(loginId);
     } catch (err) {
       return { success: false, msg: "유저 존재 여부 확인 에러" };
     }
@@ -70,8 +69,7 @@ class User {
 
   async checkUserEmail(email) {
     try {
-      const response = await this.body.checkUserEmail(email);
-      return response;
+      return await this.body.checkUserEmail(email);
     } catch (err) {
       return { success: false, msg: "이메일 존재 여부 확인 에러" };
     }
@@ -79,8 +77,7 @@ class User {
 
   async findLoginId(email) {
     try {
-      const response = await this.body.findLoginId(email);
-      return response;
+      return await this.body.findLoginId(email);
     } catch (err) {
       return { success: false, msg: "아이디 찾기 에러" };
     }
@@ -88,8 +85,7 @@ class User {
 
   async saveRefreshToken(refreshToken) {
     try {
-      const response = await this.body.saveRefreshToken(refreshToken);
-      return response;
+      return await this.body.saveRefreshToken(refreshToken);
     } catch (err) {
       return { success: false, msg: "리프레시 토큰 저장 에러" };
     }
@@ -97,8 +93,7 @@ class User {
 
   async checkRefreshToken(refreshToken) {
     try {
-      const response = await this.body.checkRefreshToken(refreshToken);
-      return response;
+      return await this.body.checkRefreshToken(refreshToken);
     } catch (err) {
       return { success: false, msg: "리프레시 토큰 검증 에러" };
     }

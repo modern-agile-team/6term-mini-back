@@ -53,6 +53,16 @@ class UserStorage {
     });
   }
 
+  async findPw(loginId, email) {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT pw FROM user WHERE login_id = ? AND email = ?;";
+      db.query(query, [loginId, email], (err, data) => {
+        if (err) reject(`${err}`);
+        resolve(data[0]?.pw || null); // data[0]이 존재하면 data[0].pw를, 존재하지 않으면 null을 반환
+      });
+    });
+  }
+
   async saveRefreshToken(refreshToken) {
     return new Promise((resolve, reject) => {
       const query = "INSERT INTO token (refresh_token) VALUES (?);";

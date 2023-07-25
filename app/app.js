@@ -2,7 +2,7 @@
 
 const express = require("express");
 const app = express();
-const movieRoutes = require("./src/routes/movieRoutes");
+const movieRoutes = require("./src/routes/movieLikeRoutes");
 const dotenv = require("dotenv");
 dotenv.config();
 

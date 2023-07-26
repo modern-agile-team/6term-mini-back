@@ -6,9 +6,14 @@ require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
 const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
 const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
 const refreshTokenExpiresIn = "24h"; // 리프레시 토큰 만료 시간
+const allowedCharactersRegex = /^[A-Za-z0-9!@#$%^&*()_+={}[\]:;"'<>,.?/~`|-]+$/; // 허용되는 문자열 정규식
 
 async function login(req, res) {
   const { loginId, pw } = req.body; // 로그인 요청에서 아이디와 비밀번호 가져오기
+
+  if (!isInputValid(loginId, pw)) {
+    return res.status(401).json({ error: "아이디와 비밀번호를 모두 입력해주세요." });
+  }
 
   try {
     const nUser = new User();
@@ -66,6 +71,18 @@ async function logout(req, res) {
 async function register(req, res) {
   const { loginId, email, pw } = req.body; // 회원가입 요청에서 아이디, 이메일, 비밀번호 가져오기
 
+  // if (!isInputValid(loginId, email, pw)) {
+  //   return res.status(401).json({ error: "아이디, 이메일, 비밀번호를 모두 입력해주세요." });
+  // }
+
+  if (isInputValid(loginId, email, pw).success === false) {
+    return res.status(401).json({ error: `${isInputValid(loginId, email, pw).msg} 을(를) 입력해주세요.` });
+  }
+
+  if (isInputValidChar(loginId, email, pw).success === false) {
+    return res.status(401).json({ error: `${isInputValidChar(loginId, email, pw).msg}에 허용되지 않는 문자열이 포함되어 있습니다.` });
+  }
+
   try {
     const nUser = new User();
     const response = await nUser.register(loginId, email, pw); // 회원가입
@@ -121,9 +138,9 @@ async function checkUserEmail(req, res) {
     const emailExists = await user.checkUserEmail(email);
 
     if (emailExists) {
-      res.status(401).json({ msg: "이미 가입된 이메일입니다." });
+      res.status(401).json(false);
     } else {
-      res.status(200).json({ msg: "사용 가능한 이메일입니다." });
+      res.status(200).json(true);
     }
 
   } catch (error) {
@@ -247,6 +264,20 @@ async function checkRefreshToken(req, res) {
     console.error(error);
     return res.status(500).json({ error: "리프레시 토큰 검증 오류" });
   }
+}
+
+function isInputValid(loginId, email, pw) {
+  if (!loginId) return { success: false, msg: "아이디" };
+  if (!email) return { success: false, msg: "이메일" };
+  if (!pw) return { success: false, msg: "비밀번호" };
+  return true;
+}
+
+function isInputValidChar(loginId, email, pw) {
+  if (!allowedCharactersRegex.test(loginId)) return { success: false, msg: "아이디" };
+  if (!allowedCharactersRegex.test(email)) return { success: false, msg: "이메일" };
+  if (!allowedCharactersRegex.test(pw)) return { success: false, msg: "비밀번호" };
+  return true;
 }
 
 module.exports = { login, logout, register, deleteAccount, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };

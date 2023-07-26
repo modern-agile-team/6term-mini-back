@@ -74,6 +74,22 @@ async function register(req, res) {
   }
 }
 
+async function deleteAccount(req, res) {
+  const { id } = req.body; // 회원탈퇴 요청에서 아이디 가져오기
+  try {
+    const nUser = new User();
+    const response = await nUser.deleteAccount(id); // 회원탈퇴
+    if (!response.success) { // 회원탈퇴 실패
+      res.status(401).json({ error: response.msg });
+    } else {
+      res.status(200).json({ response }); // 회원탈퇴 성공
+    }
+  } catch (error) { // 에러 처리
+    console.error(error);
+    res.status(500).json({ error: "회원탈퇴 오류" });
+  }
+}
+
 async function checkUserLoginId(req, res) {
   try {
     const user = new User();
@@ -81,9 +97,9 @@ async function checkUserLoginId(req, res) {
     const userExists = await user.checkUserLoginId(loginId);
 
     if (userExists) {
-      res.status(401).json({ msg: "이미 존재하는 아이디입니다." });
+      res.status(401).json(false);
     } else {
-      res.status(200).json({ msg: "사용 가능한 아이디입니다." });
+      res.status(200).json(true);
     }
 
   } catch (error) {
@@ -227,4 +243,4 @@ async function checkRefreshToken(req, res) {
   }
 }
 
-module.exports = { login, logout, register, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };
+module.exports = { login, logout, register, deleteAccount, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };

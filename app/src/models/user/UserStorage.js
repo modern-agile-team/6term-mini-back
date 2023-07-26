@@ -3,6 +3,7 @@
 const db = require("../../config/db");
 
 class UserStorage {
+
   async login(loginId, pw) {
     return new Promise((resolve, reject) => {
       const query = "SELECT * FROM user WHERE login_id = ?;";
@@ -30,6 +31,22 @@ class UserStorage {
       db.query(query, [loginId, email, pw], (err, data) => {
         if (err) reject(`${err}`);
         resolve({ success: true, msg: "회원가입 완료", loginId, email });
+      });
+    });
+  }
+
+  async deleteAccount(id) {
+    return new Promise((resolve, reject) => {
+      // movie_likes 테이블에서 해당 유저의 좋아요 정보 삭제
+      const deleteLikesQuery = "DELETE FROM movie_likes WHERE user_id = ?;";
+      db.query(deleteLikesQuery, [id]);
+
+      // user 테이블에서 해당 유저의 정보 삭제
+      const query = "DELETE FROM user WHERE id = ?;";
+      db.query(query, [id], (err, data) => {
+        if (err) reject(`${err}`);
+        if (data.affectedRows === 0) resolve({ success: false, msg: "존재하지 않는 계정입니다." });
+        resolve({ success: true, msg: "계정 삭제 완료" });
       });
     });
   }

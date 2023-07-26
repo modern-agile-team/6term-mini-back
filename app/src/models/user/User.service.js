@@ -1,11 +1,11 @@
 "user strict";
 
 const UserStorage = require("./UserStorage");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
-const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
-const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
-const refreshTokenExpiresIn = "7d"; // 리프레시 토큰 만료 시간
+// const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
+// const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
+// const refreshTokenExpiresIn = "7d"; // 리프레시 토큰 만료 시간
 
 class User {
   constructor(body) {
@@ -69,6 +69,19 @@ class User {
       return response;
     } catch (err) {
       return { success: false, msg: "회원가입 에러" };
+    }
+  }
+
+  async deleteAccount(id) {
+    try {
+      const response = await this.body.deleteAccount(id);
+      if (!response.success) {
+        return { success: false, msg: response.msg };
+      }
+
+      return response;
+    } catch (err) {
+      return { success: false, msg: "회원탈퇴 에러" };
     }
   }
 

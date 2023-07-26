@@ -5,7 +5,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 
 router.post('/login', authController.login); // 로그인, 토큰 발급
-router.delete('/logout', authController.logout); // 로그아웃
+router.delete('/logout', authController.logout); // 로그아웃 (DB 리프레시 토큰 삭제)
 router.post('/register', authController.register); // 회원가입
 router.delete('/users', authController.deleteAccount); // 회원 탈퇴
 

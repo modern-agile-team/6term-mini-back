@@ -98,7 +98,10 @@ async function register(req, res) {
 }
 
 async function deleteAccount(req, res) {
-  const { id } = req.body; // 회원탈퇴 요청에서 아이디 가져오기
+  const { accessToken } = req.body; // 회원탈퇴 요청에서 액세스 토큰 가져오기
+  const decodedAccessToken = decodeJWT(accessToken); // 액세스 토큰 디코딩
+  const id = decodedAccessToken.id; // 디코딩된 액세스 토큰에서 아이디 가져오기
+
   try {
     const nUser = new User();
     const response = await nUser.deleteAccount(id); // 회원탈퇴
@@ -278,6 +281,15 @@ function isInputValidChar(loginId, email, pw) {
   if (!allowedCharactersRegex.test(email)) return { success: false, msg: "이메일" };
   if (!allowedCharactersRegex.test(pw)) return { success: false, msg: "비밀번호" };
   return true;
+}
+
+function decodeJWT(token) {
+  try {
+    return jwt.verify(token, secretKey);
+  } catch (error) {
+    console.error('JWT decoding error:', error.message);
+    return null;
+  }
 }
 
 module.exports = { login, logout, register, deleteAccount, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };

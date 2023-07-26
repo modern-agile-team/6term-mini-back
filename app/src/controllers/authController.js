@@ -52,7 +52,7 @@ async function login(req, res) {
 }
 
 async function logout(req, res) {
-  const { refreshToken } = req.body; // 로그아웃 요청에서 리프레시 토큰 가져오기
+  const refreshToken = req.headers.refreshtoken; // 로그아웃 요청에서 리프레시 토큰 가져오기
 
   try {
     const nUser = new User();
@@ -71,9 +71,9 @@ async function logout(req, res) {
 async function register(req, res) {
   const { loginId, email, pw } = req.body; // 회원가입 요청에서 아이디, 이메일, 비밀번호 가져오기
 
-  // if (!isInputValid(loginId, email, pw)) {
-  //   return res.status(401).json({ error: "아이디, 이메일, 비밀번호를 모두 입력해주세요." });
-  // }
+  if (!isValidEmail(email)) {
+    return res.status(401).json({ error: "이메일 형식이 올바르지 않습니다." });
+  }
 
   if (isInputValid(loginId, email, pw).success === false) {
     return res.status(401).json({ error: `${isInputValid(loginId, email, pw).msg} 을(를) 입력해주세요.` });
@@ -98,7 +98,7 @@ async function register(req, res) {
 }
 
 async function deleteAccount(req, res) {
-  const { accessToken } = req.body; // 회원탈퇴 요청에서 액세스 토큰 가져오기
+  const accessToken = req.headers.accesstoken; // 회원탈퇴 요청에서 액세스 토큰 가져오기
   const decodedAccessToken = decodeJWT(accessToken); // 액세스 토큰 디코딩
   const id = decodedAccessToken.id; // 디코딩된 액세스 토큰에서 아이디 가져오기
 
@@ -190,7 +190,7 @@ async function findPw(req, res) {
 
 async function checkToken(req, res, next) {
   try {
-    const token = req.headers.authorization; // Authorization 헤더에서 토큰 가져오기
+    const token = req.headers.accesstoken; // Authorization 헤더에서 토큰 가져오기
 
     if (!token) {
       return res.status(401).json({ error: "토큰이 제공되지 않았습니다" });
@@ -243,7 +243,7 @@ async function checkToken(req, res, next) {
 
 // DB로 refreshtoken을 저장
 async function saveRefreshToken(req, res) {
-  const { refreshToken } = req.body;
+  const refreshToken = req.headers.refreshtoken;
 
   try {
     const nUser = new User();
@@ -257,11 +257,10 @@ async function saveRefreshToken(req, res) {
 
 // DB에서 refreshtoken을 검증
 async function checkRefreshToken(req, res) {
-  const { refreshToken } = req.body;
+  const refreshToken = req.headers.refreshtoken;
   try {
     const nUser = new User();
     const response = await nUser.checkRefreshToken(refreshToken);
-    console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);
@@ -285,11 +284,16 @@ function isInputValidChar(loginId, email, pw) {
 
 function decodeJWT(token) {
   try {
-    return jwt.verify(token, secretKey);
+    return jwt.decode(token, { complete: true }); // 토큰 디코딩
   } catch (error) {
-    console.error('JWT decoding error:', error.message);
+    console.error('Error decoding JWT:', error);
     return null;
   }
+}
+
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 module.exports = { login, logout, register, deleteAccount, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };

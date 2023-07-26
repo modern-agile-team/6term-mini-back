@@ -28,6 +28,12 @@ async function login(req, res) {
     const accessToken = jwt.sign(accessTokenPayload, secretKey, { expiresIn: accessTokenExpiresIn }); // 액세스 토큰 발급
     const refreshToken = jwt.sign(refreshTokenPayload, secretKey, { expiresIn: refreshTokenExpiresIn }); // 리프레시 토큰 발급
 
+    // 리프레시 토큰 DB에 저장
+    const saveRefreshTokenResponse = await nUser.saveRefreshToken(refreshToken);
+    if (!saveRefreshTokenResponse.success) {
+      return res.status(401).json({ error: "리프레시 토큰 저장 오류" });
+    }
+
     res.json({
       msg: "로그인 성공, 토큰이 발급되었습니다!",
       accessToken: accessToken,

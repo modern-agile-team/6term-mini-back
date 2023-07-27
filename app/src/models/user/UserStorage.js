@@ -91,6 +91,16 @@ class UserStorage {
     });
   }
 
+  async getProfile(id) {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT login_id AS loginId, email FROM user WHERE id = ?;"; // id로 로그인 아이디와 이메일을 가져옴
+      db.query(query, [id], (err, data) => {
+        if (err) reject(`${err}`);
+        resolve(data[0]);
+      });
+    });
+  }
+
   async saveRefreshToken(refreshToken) {
     return new Promise((resolve, reject) => {
       const query = "INSERT INTO token (refresh_token) VALUES (?);";

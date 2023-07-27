@@ -2,12 +2,22 @@
 
 const User = require('../models/user/User.service');
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
 const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
 const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
 const refreshTokenExpiresIn = "24h"; // 리프레시 토큰 만료 시간
 const allowedCharactersRegex = /^[A-Za-z0-9!@#$%^&*()_+={}[\]:;"'<>,.?/~`|-]+$/; // 허용되는 문자열 정규식
 
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+// 로그인
 async function login(req, res) {
   const { loginId, pw } = req.body; // 로그인 요청에서 아이디와 비밀번호 가져오기
 
@@ -51,6 +61,7 @@ async function login(req, res) {
   }
 }
 
+// 로그아웃
 async function logout(req, res) {
   const refreshToken = req.headers.refreshtoken; // 로그아웃 요청에서 리프레시 토큰 가져오기
 
@@ -68,6 +79,7 @@ async function logout(req, res) {
   }
 }
 
+// 회원가입
 async function register(req, res) {
   const { loginId, email, pw } = req.body; // 회원가입 요청에서 아이디, 이메일, 비밀번호 가져오기
 
@@ -97,6 +109,7 @@ async function register(req, res) {
   }
 }
 
+// 계정 삭제
 async function deleteAccount(req, res) {
   const accessToken = req.headers.accesstoken; // 회원탈퇴 요청에서 액세스 토큰 가져오기
   const decodedAccessToken = decodeJWT(accessToken); // 액세스 토큰 디코딩
@@ -116,6 +129,7 @@ async function deleteAccount(req, res) {
   }
 }
 
+// 아이디 중복
 async function checkUserLoginId(req, res) {
   try {
     const user = new User();
@@ -134,6 +148,7 @@ async function checkUserLoginId(req, res) {
   }
 }
 
+// 이메일 중복
 async function checkUserEmail(req, res) {
   try {
     const user = new User();
@@ -152,6 +167,7 @@ async function checkUserEmail(req, res) {
   }
 }
 
+// 아이디 찾기
 async function findLoginId(req, res) {
   try {
     const user = new User();
@@ -159,7 +175,22 @@ async function findLoginId(req, res) {
     const loginId = await user.findLoginId(email);
 
     if (loginId) {
-      res.status(200).json({ msg: "아이디 찾기 완료", loginId})
+      const mailOptions = { // 메일 옵션
+        from: process.env.EMAIL_USER, // 발송 메일 주소
+        to: email, // 수신 메일 주소
+        subject: "혼영관 아이디 찾기 요청으로 발신된 이메일입니다.", // 제목
+        text: `혼영관에 ${email} (으)로 가입하신 계정의 아이디는 ${loginId} 입니다.\n외부에 유출되지 않도록 주의해주세요!`, // 내용
+      };
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log("Error sending email:", error);
+          res.status(500).json({ error: "이메일 발송 오류" });
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+      res.status(200).json({ msg: "아이디를 이메일로 발송하였습니다."})
     } else {
       res.status(401).json({ error: "존재하지 않는 이메일입니다." });
     }
@@ -170,6 +201,7 @@ async function findLoginId(req, res) {
   }
 }
 
+// 비밀번호 찾기
 async function findPw(req, res) {
   try {
     const user = new User();
@@ -177,7 +209,22 @@ async function findPw(req, res) {
     const pw = await user.findPw(loginId, email);
 
     if (pw) {
-      res.status(200).json({ msg: "비밀번호 찾기 완료", pw})
+      const mailOptions = { // 메일 옵션
+        from: process.env.EMAIL_USER, // 발송 메일 주소
+        to: email, // 수신 메일 주소
+        subject: "혼영관 비밀번호 찾기 요청으로 발신된 이메일입니다.", // 제목
+        text: `혼영관에 ${loginId} (으)로 가입하신 계정의 비밀번호는 ${pw} 입니다.\n외부에 유출되지 않도록 주의해주세요!`, // 내용
+      };
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log("Error sending email:", error);
+          res.status(500).json({ error: "이메일 발송 오류" });
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+      res.status(200).json({ msg: "비밀번호를 이메일로 발송하였습니다."})
     } else {
       res.status(401).json({ error: "아이디 혹은 이메일이 일치하지 않습니다." });
     }
@@ -188,6 +235,7 @@ async function findPw(req, res) {
   }
 }
 
+// 토큰 검증
 async function checkToken(req, res, next) {
   try {
     const token = req.headers.accesstoken; // Authorization 헤더에서 토큰 가져오기
@@ -241,6 +289,33 @@ async function checkToken(req, res, next) {
   }
 }
 
+// 프로필 정보 가져오기
+async function getProfile(req, res) {
+  const accessToken = req.headers.accesstoken; // 프로필 정보 요청에서 액세스 토큰 가져오기
+  if (!accessToken) {
+    return res.status(401).json({ error: "토큰이 제공되지 않았습니다" });
+  }
+  const decodedAccessToken = decodeJWT(accessToken); // 액세스 토큰 디코딩
+  if (!decodedAccessToken) {
+    return res.status(401).json({ error: "유효하지 않은 토큰입니다" });
+  }
+  const id = decodedAccessToken.id; // 디코딩된 액세스 토큰에서 아이디 가져오기
+
+  try {
+    const nUser = new User();
+    const response = await nUser.getProfile(id); // 프로필 정보 가져오기
+
+    if (response.success === false) {
+      res.status(401).json({ error: response.error });
+    } else {
+      res.status(200).json({ response });
+    }
+  } catch (error) { // 에러 처리
+    console.error(error);
+    res.status(500).json({ error: "프로필 정보 가져오기 오류" });
+  }
+}
+
 // DB로 refreshtoken을 저장
 async function saveRefreshToken(req, res) {
   const refreshToken = req.headers.refreshtoken;
@@ -268,6 +343,7 @@ async function checkRefreshToken(req, res) {
   }
 }
 
+// 공백, 빈칸 검사
 function isInputValid(loginId, email, pw) {
   if (!loginId) return { success: false, msg: "아이디" };
   if (!email) return { success: false, msg: "이메일" };
@@ -275,6 +351,7 @@ function isInputValid(loginId, email, pw) {
   return true;
 }
 
+// 허용되지 않는 문자열 검사
 function isInputValidChar(loginId, email, pw) {
   if (!allowedCharactersRegex.test(loginId)) return { success: false, msg: "아이디" };
   if (!allowedCharactersRegex.test(email)) return { success: false, msg: "이메일" };
@@ -282,6 +359,7 @@ function isInputValidChar(loginId, email, pw) {
   return true;
 }
 
+// JWT 디코딩
 function decodeJWT(token) {
   try {
     return jwt.decode(token, { complete: true }); // 토큰 디코딩
@@ -291,9 +369,10 @@ function decodeJWT(token) {
   }
 }
 
+// 이메일 유효성 검사
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-module.exports = { login, logout, register, deleteAccount, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, saveRefreshToken, checkRefreshToken };
+module.exports = { login, logout, register, deleteAccount, checkUserLoginId,checkUserEmail,findLoginId, findPw, checkToken, getProfile, saveRefreshToken, checkRefreshToken };

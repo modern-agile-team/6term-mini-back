@@ -117,6 +117,14 @@ class User {
     }
   }
 
+  async getProfile(id) {
+    try {
+      return await this.body.getProfile(id);
+    } catch (err) {
+      return { success: false, msg: "프로필 정보 가져오기 에러" };
+    }
+  }
+
   async saveRefreshToken(refreshToken) {
     try {
       return await this.body.saveRefreshToken(refreshToken);

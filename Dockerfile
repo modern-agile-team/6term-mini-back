@@ -10,7 +10,6 @@ COPY . .
 
 # 애플리케이션 의존성 설치
 RUN npm i
-RUN npm install -g nodemon
 
 # 애플리케이션 실행 
 CMD ["npm", "start"]

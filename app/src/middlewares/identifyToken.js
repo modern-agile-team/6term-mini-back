@@ -31,12 +31,13 @@ const check = {
         if (!refreshToken) {
           return res.status(401).json({
             success: false,
-            msg: "리프레시 토큰이 만료되었습니다."
+            msg: "리프레시 토큰이 없습니다."
           });
         }
         const result = await Token.checkRefreshToken(refreshToken);
         if (result.success) {
-          return res.status(200).json(result);
+          req.accesstoken = result.accessToken;
+          return next();
         } else {
           return res.status(401).json(result);
         }

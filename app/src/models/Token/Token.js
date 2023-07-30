@@ -21,7 +21,7 @@ class Token {
   static async checkRefreshToken(refreshToken) {
     const decodedRefreshToken = jwt.verify(refreshToken, secretKey);
     if (!decodedRefreshToken) {
-      return { success: false, msg: "토큰이 만료되었습니다." };
+      return { success: false, msg: "리프레시 토큰이 만료되었습니다." };
     }
 
     const check = await UserStorage.checkRefreshToken(refreshToken);
@@ -29,6 +29,7 @@ class Token {
     if (check.success) {
       const userInfo = this.decodeToken(refreshToken);
       const newAccessToken = await Auth.crateAccessToken(userInfo);
+      console.log("액세스 토큰 갱신됨:", newAccessToken);
       return {
         success: true,
         msg: "토큰이 갱신되었습니다.",

@@ -1,144 +1,198 @@
 "user strict";
 
 const UserStorage = require("./UserStorage");
-// const jwt = require("jsonwebtoken");
-require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
-// const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
-// const accessTokenExpiresIn = "5m"; // 액세스 토큰 만료 시간
-// const refreshTokenExpiresIn = "7d"; // 리프레시 토큰 만료 시간
+const Auth = require("../Auth/Auth");
+const Token = require("../Token/Token");
+const Mail = require("../email/email");
+const allowedCharactersRegex = /^[A-Za-z0-9!@#$%^&*()_+={}[\]:;"'<>,.?/~`|-]+$/; // 허용되는 문자열 정규식
 
 class User {
-  constructor(body) {
-    this.body = new UserStorage(body);
-  }
-
+  // 로그인
   async login(loginId, pw) {
     try {
-      const userInfo = await this.body.login(loginId, pw);
-      // if (!userInfo) {
-      //   return { success: false, msg: "존재하지 않는 아이디입니다." };
-      // }
-      // if (pw !== userInfo.pw) {
-      //   return { success: false, msg: "비밀번호가 틀렸습니다." };
-      // }
+      const userInfo = await UserStorage.login(loginId);
+      if (!userInfo) {
+        return { success: false, msg: "존재하지 않는 아이디입니다." };
+      }
+      if (pw !== userInfo.pw) {
+        return { success: false, msg: "비밀번호가 틀렸습니다." };
+      }
 
-      // const accessTokenPayload = { login_id: userInfo.login_id };
-      // const refreshTokenPayload = { login_id: userInfo.login_id, refresh_token: true };
+      const accessToken = await Auth.crateAccessToken(userInfo);
+      const refreshToken = await Auth.crateRefreshToken(userInfo);
 
-      // const accessToken = jwt.sign(accessTokenPayload, secretKey, { expiresIn: accessTokenExpiresIn }); // 액세스 토큰 발급
-      // const refreshToken = jwt.sign(refreshTokenPayload, secretKey, { expiresIn: refreshTokenExpiresIn }); // 리프레시 토큰 발급
+      Token.saveRefreshToken(refreshToken); // 리프레시 토큰 저장
 
-      return userInfo;
+      return {
+        msg: "로그인 성공. 토큰이 발급되었습니다!",
+        accessToken: accessToken,
+        refreshToken: refreshToken
+      };
     } catch (err) {
       return { success: false, msg: "로그인 에러" };
     }
   }
 
+  // 로그아웃
   async logout(refreshToken) {
     try {
-      const response = await this.body.logout(refreshToken);
-      if (!response.success) {
-        return { success: false, msg: response.msg };
+      const deleteToken = await UserStorage.logout(refreshToken);
+      if (!deleteToken.success) {
+        return { success: false, msg: deleteToken.msg };
       }
 
-      return response;
+      return deleteToken;
     } catch (err) {
       return { success: false, msg: "로그아웃 에러" };
     }
   }
 
+  // 회원가입
   async register(loginId, email, pw) {
     try {
-      const userExists = await this.checkUserLoginId(loginId);
+      const checkInputValid = this.checkInputValid(loginId, email, pw);
+      if (!checkInputValid.success) {
+        return { success: false, msg: `${checkInputValid.msg} 을(를) 입력해주세요.` };
+      }
+
+      const checkInputValidChar = this.checkInputValidChar(loginId, email, pw);
+      if (!checkInputValidChar.success) {
+        return { success: false, msg: `${checkInputValidChar.msg} 에 허용되지 않는 문자열이 포함되어 있습니다.` };
+      }
+
+      if (!this.checkEmailValid(email)) {
+        return { success: false, msg: "이메일 형식이 올바르지 않습니다." };
+      }
+
+      const userExists = await UserStorage.checkUserLoginId(loginId);
       if (userExists) {
         return { success: false, msg: "이미 존재하는 아이디입니다." };
       }
 
-      if (email) {
-        const emailExists = await this.checkUserEmail(email);
-        if (emailExists) {
-          return { success: false, msg: "이미 존재하는 이메일입니다." };
-        }
+      const emailExists = await UserStorage.checkUserEmail(email);
+      if (emailExists) {
+        return { success: false, msg: "이미 존재하는 이메일입니다." };
       }
 
-      const response = await this.body.register(loginId, email, pw);
-      if (!response.success) {
-        return { success: false, msg: response.msg };
+      const register = await UserStorage.register(loginId, email, pw);
+      if (!register.success) {
+        return { success: false, msg: register.msg };
       }
 
-      return response;
+      return register;
     } catch (err) {
       return { success: false, msg: "회원가입 에러" };
     }
   }
 
-  async deleteAccount(id) {
+  // 회원탈퇴
+  async deleteAccount(accesstoken) {
     try {
-      const response = await this.body.deleteAccount(id);
-      if (!response.success) {
-        return { success: false, msg: response.msg };
+      const decodeToken = await Token.decodeToken(accesstoken);
+      const id = decodeToken.id;
+      const deleteAccount = await UserStorage.deleteAccount(id);
+
+      if (!deleteAccount.success) {
+        return { success: false, msg: deleteAccount.msg };
       }
 
-      return response;
+      return deleteAccount;
     } catch (err) {
       return { success: false, msg: "회원탈퇴 에러" };
     }
   }
 
+  // 아이디 중복 검사
   async checkUserLoginId(loginId) {
     try {
-      return await this.body.checkUserLoginId(loginId);
+      return await UserStorage.checkUserLoginId(loginId);
     } catch (err) {
       return { success: false, msg: "유저 존재 여부 확인 에러" };
     }
   }
 
+  // 이메일 중복 검사
   async checkUserEmail(email) {
     try {
-      return await this.body.checkUserEmail(email);
+      return await UserStorage.checkUserEmail(email);
     } catch (err) {
       return { success: false, msg: "이메일 존재 여부 확인 에러" };
     }
   }
 
+  // 아이디 찾기
   async findLoginId(email) {
-    try {
-      return await this.body.findLoginId(email);
-    } catch (err) {
-      return { success: false, msg: "아이디 찾기 에러" };
+    const loginId = await UserStorage.findLoginId(email);
+    if (!loginId) {
+      return { success: false, msg: "존재하지 않는 이메일입니다."};
+    } else {
+      const content = "아이디"
+      await Mail.send(loginId, email, content);
+      return { success: true, msg: "이메일 발송 성공" };
     }
   }
 
+  // 비밀번호 찾기
   async findPw(loginId, email) {
-    try {
-      return await this.body.findPw(loginId, email);
-    } catch (err) {
-      return { success: false, msg: "비밀번호 찾기 에러" };
+    const pw = await UserStorage.findPw(loginId, email);
+    if (!pw) {
+      return { success: false, msg: "존재하지 않는 계정입니다."};
+    } else {
+      const content = "비밀번호"
+      await Mail.send(pw, email, content);
+      return { success: true, msg: "이메일 발송 성공" };
     }
   }
 
-  async getProfile(id) {
+  // 프로필 정보 가져오기
+  async getProfile(accesstoken) {
     try {
-      return await this.body.getProfile(id);
+      const decodeToken = await Token.decodeToken(accesstoken);
+      const id = decodeToken.id;
+      const profile = await UserStorage.getProfile(id);
+
+      if (!profile) {
+        return { success: false, msg: "프로필 정보 가져오기 실패" };
+      }
+
+      return profile;
     } catch (err) {
       return { success: false, msg: "프로필 정보 가져오기 에러" };
     }
   }
 
-  async saveRefreshToken(refreshToken) {
-    try {
-      return await this.body.saveRefreshToken(refreshToken);
-    } catch (err) {
-      return { success: false, msg: "리프레시 토큰 저장 에러" };
+  // 공백 확인
+  checkInputValid(loginId, email, pw) {
+    if (!loginId) {
+      return { success: false, msg: "아이디" };
     }
+    if (!email) {
+      return { success: false, msg: "이메일" };
+    }
+    if (!pw) {
+      return { success: false, msg: "비밀번호" };
+    }
+    return { success: true };
   }
 
-  async checkRefreshToken(refreshToken) {
-    try {
-      return await this.body.checkRefreshToken(refreshToken);
-    } catch (err) {
-      return { success: false, msg: "리프레시 토큰 검증 에러" };
+  // 허용되지 않는 문자열 확인
+  checkInputValidChar(loginId, email, pw) {
+    if (!allowedCharactersRegex.test(loginId)) {
+      return { success: false, msg: "아이디" };
     }
+    if (!allowedCharactersRegex.test(email)) {
+      return { success: false, msg: "이메일" };
+    }
+    if (!allowedCharactersRegex.test(pw)) {
+      return { success: false, msg: "비밀번호" };
+    }
+    return { success: true };
+  }
+
+  // 이메일 유효성 검사
+  checkEmailValid(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 }
 

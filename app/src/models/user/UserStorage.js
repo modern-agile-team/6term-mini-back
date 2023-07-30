@@ -3,8 +3,8 @@
 const db = require("../../config/db");
 
 class UserStorage {
-
-  async login(loginId, pw) {
+  // 로그인
+  static async login(loginId, pw) {
     return new Promise((resolve, reject) => {
       const query = "SELECT * FROM user WHERE login_id = ?;";
       db.query(query, [loginId], (err, data) => {
@@ -14,7 +14,8 @@ class UserStorage {
     });
   }
 
-  async logout(refreshToken) {
+  // 로그아웃
+  static async logout(refreshToken) {
     return new Promise((resolve, reject) => {
       const query = "DELETE FROM token WHERE refresh_token = ?;";
       db.query(query, [refreshToken], (err, data) => {
@@ -25,17 +26,19 @@ class UserStorage {
     });
   }
 
-  async register(loginId, email, pw) {
+  // 회원가입
+  static async register(loginId, email, pw) {
     return new Promise((resolve, reject) => {
       const query = "INSERT INTO user (login_id, email, pw) VALUES (?, ?, ?);";
       db.query(query, [loginId, email, pw], (err, data) => {
         if (err) reject(`${err}`);
-        resolve({ success: true, msg: "회원가입 완료", loginId, email });
+        resolve({ success: true, msg: "회원가입 완료" });
       });
     });
   }
 
-  async deleteAccount(id) {
+  // 회원탈퇴
+  static async deleteAccount(id) {
     return new Promise((resolve, reject) => {
       // movie_likes 테이블에서 해당 유저의 좋아요 정보 삭제
       const deleteLikesQuery = "DELETE FROM movie_likes WHERE user_id = ?;";
@@ -51,7 +54,8 @@ class UserStorage {
     });
   }
 
-  async checkUserLoginId(loginId) {
+  // 아이디 중복 검사
+  static async checkUserLoginId(loginId) {
     return new Promise((resolve, reject) => {
       const query = "SELECT EXISTS (SELECT * FROM user WHERE login_id = ?) AS success;";
       db.query(query, [loginId], (err, data) => {
@@ -61,7 +65,8 @@ class UserStorage {
     });
   }
 
-  async checkUserEmail(email) {
+  // 이메일 중복 검사
+  static async checkUserEmail(email) {
     return new Promise((resolve, reject) => {
       const query = "SELECT EXISTS (SELECT * FROM user WHERE email = ?) AS success;";
       db.query(query, [email], (err, data) => {
@@ -71,7 +76,8 @@ class UserStorage {
     });
   }
 
-  async findLoginId(email) {
+  // 아이디 찾기
+  static async findLoginId(email) {
     return new Promise((resolve, reject) => {
       const query = "SELECT login_id FROM user WHERE email = ?;";
       db.query(query, [email], (err, data) => {
@@ -81,7 +87,8 @@ class UserStorage {
     });
   }
 
-  async findPw(loginId, email) {
+  // 비밀번호 찾기
+  static async findPw(loginId, email) {
     return new Promise((resolve, reject) => {
       const query = "SELECT pw FROM user WHERE login_id = ? AND email = ?;";
       db.query(query, [loginId, email], (err, data) => {
@@ -91,7 +98,8 @@ class UserStorage {
     });
   }
 
-  async getProfile(id) {
+  // 프로필 정보 가져오기
+  static async getProfile(id) {
     return new Promise((resolve, reject) => {
       const query = "SELECT login_id AS loginId, email FROM user WHERE id = ?;"; // id로 로그인 아이디와 이메일을 가져옴
       db.query(query, [id], (err, data) => {
@@ -101,7 +109,8 @@ class UserStorage {
     });
   }
 
-  async saveRefreshToken(refreshToken) {
+  // 리프레시 토큰 저장
+  static async saveRefreshToken(refreshToken) {
     return new Promise((resolve, reject) => {
       const query = "INSERT INTO token (refresh_token) VALUES (?);";
       db.query(query, [refreshToken], (err, data) => {
@@ -111,7 +120,8 @@ class UserStorage {
     });
   }
 
-  async checkRefreshToken(refreshToken) {
+  // 리프레시 토큰 체크
+  static async checkRefreshToken(refreshToken) {
     return new Promise((resolve, reject) => {
       const query = "SELECT * FROM token WHERE refresh_token = ?;";
       db.query(query, [refreshToken], (err, data) => {

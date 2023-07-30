@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 키 가져오기
 
 const check = {
-  token: (req, res, next) => {
+  token: async (req, res, next) => {
     try {
       const token = req.headers.accesstoken;
       if (!token) {
@@ -31,10 +31,10 @@ const check = {
         if (!refreshToken) {
           return res.status(401).json({
             success: false,
-            msg: "토큰이 만료되었습니다."
+            msg: "리프레시 토큰이 만료되었습니다."
           });
         }
-        const result = Token.checkRefreshToken(refreshToken);
+        const result = await Token.checkRefreshToken(refreshToken);
         if (result.success) {
           return res.status(200).json(result);
         } else {

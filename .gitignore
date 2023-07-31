@@ -7,6 +7,8 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+**.DS_Store
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -39,7 +41,7 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
+**node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)

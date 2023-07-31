@@ -9,6 +9,9 @@ async function login(req, res) {
   try {
     const user = new User();
     const response = await user.login(loginId, pw); // 유저 정보 가져오기
+    if (!response.success) {
+      return res.status(401).json(response);
+    }
     return res.status(200).json(response);
 
   } catch (error) { // 에러 처리
@@ -20,7 +23,7 @@ async function login(req, res) {
 // 로그아웃
 async function logout(req, res) {
   const refreshToken = req.headers.refreshtoken; // 로그아웃 요청에서 리프레시 토큰 가져오기
-
+  
   try {
     const user = new User();
     const response = await user.logout(refreshToken); // 로그아웃
@@ -105,14 +108,14 @@ async function checkUserEmail(req, res) {
 // 아이디 찾기
 async function findLoginId(req, res) {
   const { email } = req.body;
-
+  
   try {
     const user = new User();
     const response = await user.findLoginId(email);
     if (response.success) {
-      return res.status(200).json({ msg: response.msg });
+      return res.status(200).json({ success: true, msg: response.msg });
     } else {
-      return res.status(401).json(response.msg);
+      return res.status(401).json({ success: false, msg: response.msg });
     }
   } catch (error) {
     console.error(error);
@@ -123,14 +126,13 @@ async function findLoginId(req, res) {
 // 비밀번호 찾기
 async function findPw(req, res) {
   const { loginId, email } = req.body;
-
   try {
     const user = new User();
     const response = await user.findPw(loginId, email);
     if (response.success) {
-      return res.status(200).json({ msg: response.msg });
+      return res.status(200).json({ success: true, msg: response.msg });
     } else {
-      return res.status(401).json(response.msg);
+      return res.status(401).json({ success: false, msg: response.msg });
     }
   } catch (error) {
     console.error(error);

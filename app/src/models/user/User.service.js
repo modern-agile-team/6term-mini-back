@@ -11,6 +11,7 @@ class User {
   async login(loginId, pw) {
     try {
       const userInfo = await UserStorage.login(loginId);
+
       if (!userInfo) {
         return { success: false, msg: "존재하지 않는 아이디입니다." };
       }
@@ -24,7 +25,8 @@ class User {
       Token.saveRefreshToken(refreshToken); // 리프레시 토큰 저장
 
       return {
-        msg: "로그인 성공. 토큰이 발급되었습니다!",
+        success: true,
+        // msg: "로그인 성공. 토큰이 발급되었습니다!",
         accessToken: accessToken,
         refreshToken: refreshToken
       };

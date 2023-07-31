@@ -9,3 +9,5 @@ services:
     restart: always
     environment:
       - TZ=Asia/Seoul
+    volumes:
+      - /Users/2swo/애자일/MA6/6term-mini-back-movie/app:/home/app

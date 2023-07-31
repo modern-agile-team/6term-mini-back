@@ -1,15 +1,16 @@
-
-
 # Node.js 버전을 기반으로 하는 도커 이미지 사용
 FROM node:18.16.0-alpine
 
 # 애플리케이션 코드를 컨테이너 내부에 복사
-WORKDIR home/app
+WORKDIR /home/app
 
-COPY . .
+COPY package.json package-lock.json ./
 
 # 애플리케이션 의존성 설치
 RUN npm i
+
+# 애플리케이션 코드 복사
+COPY app/ ./app
 
 # 애플리케이션 실행 
 CMD ["npm", "start"]

@@ -122,8 +122,11 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+<<<<<<< HEAD
 #DS_STORE
 .DS_Store
+=======
+>>>>>>> 6685174 (Initial commit)
 # yarn v2
 .yarn/cache
 .yarn/unplugged

@@ -20,6 +20,6 @@ router.delete('/users', identifyToken.check.token, authController.deleteAccount)
 
 router.get('/users/profile', identifyToken.check.token, authController.getProfile); // 프로필 정보 가져오기
 
-router.post('/token', identifyToken.check.token, tokenController.saveRefreshToken); // 리프레시 토큰 저장
+// router.post('/token', identifyToken.check.token, tokenController.saveRefreshToken); // 리프레시 토큰 저장
 
 module.exports = router;

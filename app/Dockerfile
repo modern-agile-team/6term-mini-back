@@ -4,13 +4,10 @@ FROM node:18.16.0-alpine
 # 애플리케이션 코드를 컨테이너 내부에 복사
 WORKDIR /home/app
 
-COPY package.json package-lock.json ./
+COPY . .
 
 # 애플리케이션 의존성 설치
 RUN npm i
-
-# 애플리케이션 코드 복사
-COPY app/ ./app
 
 # 애플리케이션 실행 
 CMD ["npm", "start"]

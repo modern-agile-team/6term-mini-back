@@ -1,7 +1,8 @@
 version: "3"
 services:
   ma6-mini:
-    image: 2swo/ma6-mini-movie
+    image: 2swo/ma6-mini
+
     ports:
       - "3000:3000"
     env_file:
@@ -9,5 +10,3 @@ services:
     restart: always
     environment:
       - TZ=Asia/Seoul
-    volumes:
-      - /Users/2swo/애자일/MA6/6term-mini-back-movie/app:/home/app

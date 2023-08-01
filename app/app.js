@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const movieRoutes = require("./src/routes/movieRoutes");
+const movieLikeRoutes = require("./src/routes/movieLikeRoutes");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // 라우터 연결
+app.use("/movielike", movieLikeRoutes);
 app.use("/movie", movieRoutes);
 
 module.exports = app;

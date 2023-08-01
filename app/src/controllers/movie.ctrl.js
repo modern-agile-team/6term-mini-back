@@ -7,12 +7,23 @@ const output = {
     try {
       const movie = new Movie();
       const data = await movie.getmovie();
+      return res.json(data);
 
-      //   res.render("home/mini", { data });
-      res.json(data);
     } catch (error) {
       console.log(error);
       return res.json({ success: false, msg: "ctrl.js 오류" });
+    }
+  },
+
+  getSeat: async (req, res) => {
+    try {
+      const movie = new Movie();
+      const response = await movie.getSeat();
+      return res.json(response);
+
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, msg: "좌석 조회 ctrl.js 오류" });
     }
   },
 };

@@ -4,14 +4,6 @@ const movieStorage = require("./movie.storage");
 const Token = require("../Token/Token");
 
 class Movie {
-  async getmovie() {
-    try {
-      return await movieStorage.getmovie();
-    } catch (error) {
-      console.log(error);
-      return { sucess: false, msg: "movie.js 오류" };
-    }
-  }
 
   async getSeat() {
     try {

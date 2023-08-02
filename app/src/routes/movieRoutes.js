@@ -13,12 +13,4 @@ router.post("/seats", identifyToken.check.token, ctrl.intput.reserveSeat); // �
 
 router.delete("/users/seat", identifyToken.check.token, ctrl.intput.cancelSeat); // 예매 취소
 
-router.get("/like", identifyToken.check.token, ctrl.output.getmovielike); //영화 좋아요 가져오기
-router.patch(
-  // 로그인 id 가 토큰으로 발급되서 토큰에서 가져와야함.
-  "/like/:movie_id",
-  identifyToken.check.token,
-  ctrl.process.updatemovielike
-); // 영화 좋아요 업데이트
-
 module.exports = router;

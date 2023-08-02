@@ -97,29 +97,6 @@ class Movie {
       return { sucess: false, msg: "좌석 예매 취소 movie.service.js 오류" };
     }
   }
-
-  async getmovielike() {
-    try {
-      return await movieStorage.getMovielike();
-    } catch (error) {
-      return { sucess: false, msg: "좋아요 가져오기 movie.service 오류" };
-    }
-  }
-
-  async updatemovielike(movieid, userid) {
-    try {
-      const like = await movieStorage.checkUserMovieLike(movieid, userid);
-      if (like) {
-        const response = await movieStorage.removeMovieLike(movieid, userid);
-        return response;
-      } else {
-        const response = await movieStorage.addMovieLike(movieid, userid);
-        return response;
-      }
-    } catch (error) {
-      return { success: false, msg: "좋아요 업데이트 movie.service 오류" };
-    }
-  }
 }
 
 module.exports = Movie;

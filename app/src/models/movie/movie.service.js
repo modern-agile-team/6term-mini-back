@@ -34,6 +34,21 @@ class Movie {
     try {
       const decodedToken = await Token.decodeToken(accessToken);
       const id = decodedToken.id;
+
+      const seats = await this.getSeat();
+      const isSeatReserved = seats.extractedValues.some((seat) => {
+        return (
+          seat.movieId === Number(movieId) &&
+          seat.seatRow === Number(seatRow) &&
+          seat.seatCol === Number(seatCol) &&
+          seat.seatDate === Number(seatDate)
+        );
+      });
+
+      if (isSeatReserved) {
+        return { sucess: false, msg: "이미 예약된 좌석입니다." };
+      }
+
       const reserveSeat = await movieStorage.reserveSeat(id, movieId, seatRow, seatCol, seatDate);
 
       if (reserveSeat.affectedRows === 1) {

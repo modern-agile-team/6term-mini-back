@@ -8,6 +8,7 @@ class Movie {
     try {
       return await movieStorage.getmovie();
     } catch (error) {
+      console.log(error);
       return { sucess: false, msg: "movie.js 오류" };
     }
   }
@@ -26,6 +27,7 @@ class Movie {
       return { sucess: true, msg: "좌석 조회 성공", extractedValues };
       
     } catch (error) {
+      console.log(error);
       return { sucess: false, msg: "좌석 조회 movie.service.js 오류" };
     }
   }
@@ -34,10 +36,11 @@ class Movie {
     try {
       const decodedToken = await Token.decodeToken(accessToken);
       const id = decodedToken.id;
-      
+
       const seat = await movieStorage.getUserSeat(id);
       const extractedValues = seat.map((item) => {
         return {
+          id: item.id,
           movieId: item.movie_id,
           seatRow: item.seatRow,
           seatCol: item.seatCol,
@@ -46,6 +49,7 @@ class Movie {
       });
       return { sucess: true, msg: "유저 좌석 조회 성공", extractedValues };
     } catch (error) {
+      console.log(error);
       return { sucess: false, msg: "유저 좌석 조회 movie.service.js 오류" };
     }
   }
@@ -64,20 +68,36 @@ class Movie {
           seat.seatDate === Number(seatDate)
         );
       });
-
+      
       if (isSeatReserved) {
-        return { sucess: false, msg: "이미 예약된 좌석입니다." };
+        return { sucess: false, msg: "이미 예매된 좌석입니다." };
       }
 
       const reserveSeat = await movieStorage.reserveSeat(id, movieId, seatRow, seatCol, seatDate);
 
       if (reserveSeat.affectedRows === 1) {
-        return { sucess: true, msg: "좌석 예매 성공" };
+        return { sucess: true, msg: "예매를 성공했습니다." };
       } else {
-        return { sucess: false, msg: "좌석 예매 실패" };
+        return { sucess: false, msg: "예매를 실패했습니다." };
       }
     } catch (error) {
+      console.log(error);
       return { sucess: false, msg: "좌석 예매 movie.service.js 오류" };
+    }
+  }
+
+  async cancelSeat(id) {
+    try {
+      const cancelSeat = await movieStorage.cancelSeat(id);
+
+      if (cancelSeat.affectedRows === 1) {
+        return { sucess: true, msg: "예매를 취소했습니다." };
+      } else {
+        return { sucess: false, msg: "예매되지 않은 좌석입니다." };
+      }
+    } catch (error) {
+      console.log(error);
+      return { sucess: false, msg: "좌석 예매 취소 movie.service.js 오류" };
     }
   }
 }

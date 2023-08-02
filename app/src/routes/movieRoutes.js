@@ -11,4 +11,6 @@ router.get("/users/seat", identifyToken.check.token, ctrl.output.getUserSeat); /
 
 router.post("/seats", identifyToken.check.token, ctrl.intput.reserveSeat); // 좌석 예매
 
+router.delete("/users/seat", identifyToken.check.token, ctrl.intput.cancelSeat); // 예매 취소
+
 module.exports = router;

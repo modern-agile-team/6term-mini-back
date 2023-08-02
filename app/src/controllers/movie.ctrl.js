@@ -56,6 +56,18 @@ const intput = {
       return res.json({ success: false, msg: "좌석 예매 ctrl.js 오류" });
     }
   },
+
+  cancelSeat: async (req, res) => {
+    const { id } = req.body;
+    try {
+      const movie = new Movie();
+      const response = await movie.cancelSeat(id);
+      return res.json(response);
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, msg: "좌석 취소 ctrl.js 오류" });
+    }
+  },
 };
 
 module.exports = { output, intput };

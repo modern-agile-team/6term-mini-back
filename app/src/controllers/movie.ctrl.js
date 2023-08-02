@@ -17,4 +17,20 @@ const output = {
   },
 };
 
-module.exports = { output };
+const intput = {
+  reserveSeat: async (req, res) => {
+    const accessToken = req.headers.accesstoken;
+    const { movieId, seatRow, seatCol, seatDate } = req.body;
+
+    try {
+      const movie = new Movie();
+      const response = await movie.reserveSeat(accessToken, movieId, seatRow, seatCol, seatDate);
+      return res.json(response);
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, msg: "좌석 예매 ctrl.js 오류" });
+    }
+  },
+};
+
+module.exports = { output, intput };

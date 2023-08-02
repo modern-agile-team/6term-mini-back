@@ -15,17 +15,16 @@ class Movie {
 
   async getSeat() {
     try {
-      const seat =  await movieStorage.getSeat();
+      const seat = await movieStorage.getSeat();
       const extractedValues = seat.map((item) => {
         return {
           movieId: item.movie_id,
           seatRow: item.seatRow,
           seatCol: item.seatCol,
-          seatDate: item.seatDate
+          seatDate: item.seatDate,
         };
       });
       return { sucess: true, msg: "좌석 조회 성공", extractedValues };
-      
     } catch (error) {
       console.log(error);
       return { sucess: false, msg: "좌석 조회 movie.service.js 오류" };
@@ -44,7 +43,7 @@ class Movie {
           movieId: item.movie_id,
           seatRow: item.seatRow,
           seatCol: item.seatCol,
-          seatDate: item.seatDate
+          seatDate: item.seatDate,
         };
       });
       return { sucess: true, msg: "유저 좌석 조회 성공", extractedValues };
@@ -68,12 +67,18 @@ class Movie {
           seat.seatDate === Number(seatDate)
         );
       });
-      
+
       if (isSeatReserved) {
         return { sucess: false, msg: "이미 예매된 좌석입니다." };
       }
 
-      const reserveSeat = await movieStorage.reserveSeat(id, movieId, seatRow, seatCol, seatDate);
+      const reserveSeat = await movieStorage.reserveSeat(
+        id,
+        movieId,
+        seatRow,
+        seatCol,
+        seatDate
+      );
 
       if (reserveSeat.affectedRows === 1) {
         return { sucess: true, msg: "예매를 성공했습니다." };
@@ -98,6 +103,29 @@ class Movie {
     } catch (error) {
       console.log(error);
       return { sucess: false, msg: "좌석 예매 취소 movie.service.js 오류" };
+    }
+  }
+
+  async getmovielike() {
+    try {
+      return await movieStorage.getMovielike();
+    } catch (error) {
+      return { sucess: false, msg: "좋아요 가져오기 movie.service 오류" };
+    }
+  }
+
+  async updatemovielike(movieid, userid) {
+    try {
+      const like = await movieStorage.checkUserMovieLike(movieid, userid);
+      if (like) {
+        const response = await movieStorage.removeMovieLike(movieid, userid);
+        return response;
+      } else {
+        const response = await movieStorage.addMovieLike(movieid, userid);
+        return response;
+      }
+    } catch (error) {
+      return { success: false, msg: "좋아요 업데이트 movie.service 오류" };
     }
   }
 }

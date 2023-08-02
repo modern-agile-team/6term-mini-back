@@ -3,12 +3,23 @@
 const Movie = require("../models/movie/movie.service");
 
 const output = {
+  getmovielike: async (req, res) => {
+    try {
+      const movielike = new Movie();
+      const data = await movielike.getmovielike();
+
+      //   res.render("home/mini", { data });
+      res.json(data);
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, msg: "ctrl.js 오류" });
+    }
+  },
   getmovie: async (req, res) => {
     try {
       const movie = new Movie();
       const data = await movie.getmovie();
       return res.json(data);
-
     } catch (error) {
       console.log(error);
       return res.json({ success: false, msg: "ctrl.js 오류" });
@@ -20,7 +31,6 @@ const output = {
       const movie = new Movie();
       const response = await movie.getSeat();
       return res.json(response);
-
     } catch (error) {
       console.log(error);
       return res.json({ success: false, msg: "좌석 조회 ctrl.js 오류" });
@@ -34,7 +44,6 @@ const output = {
       const movie = new Movie();
       const response = await movie.getUserSeat(accessToken);
       return res.json(response);
-
     } catch (error) {
       console.log(error);
       return res.json({ success: false, msg: "유저 좌석 조회 ctrl.js 오류" });
@@ -49,7 +58,13 @@ const intput = {
 
     try {
       const movie = new Movie();
-      const response = await movie.reserveSeat(accessToken, movieId, seatRow, seatCol, seatDate);
+      const response = await movie.reserveSeat(
+        accessToken,
+        movieId,
+        seatRow,
+        seatCol,
+        seatDate
+      );
       return res.json(response);
     } catch (error) {
       console.log(error);
@@ -70,4 +85,21 @@ const intput = {
   },
 };
 
-module.exports = { output, intput };
+const process = {
+  updatemovielike: async (req, res) => {
+    try {
+      const movieId = req.params.movie_id;
+      const userId = req.body.user_id;
+
+      const movielike = new Movie();
+      const response = await movielike.updatemovielike(movieId, userId);
+
+      res.json(response);
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, msg: "movielike.ctrl 오류" });
+    }
+  },
+};
+
+module.exports = { output, intput, process };

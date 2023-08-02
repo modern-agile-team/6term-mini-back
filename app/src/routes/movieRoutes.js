@@ -13,4 +13,11 @@ router.post("/seats", identifyToken.check.token, ctrl.intput.reserveSeat); // �
 
 router.delete("/users/seat", identifyToken.check.token, ctrl.intput.cancelSeat); // 예매 취소
 
+router.get("/movies/like", identifyToken.check.token, ctrl.output.getmovielike); //영화 좋아요 가져오기
+router.patch(
+  "/movies/like/:movie_id",
+  identifyToken.check.token,
+  ctrl.process.updatemovielike
+); // 영화 좋아요 업데이트
+
 module.exports = router;

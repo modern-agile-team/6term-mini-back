@@ -20,7 +20,8 @@ const process = {
   updatemovielike: async (req, res) => {
     try {
       const movieId = req.params.movie_id;
-      const userId = req.body.user_id;
+      const userId = req.headers.accesstoken;
+      console.log(userId);
 
       const movielike = new Movielike();
       const response = await movielike.updatemovielike(movieId, userId);

@@ -2,7 +2,7 @@
 
 const express = require("express");
 const app = express();
-const movieLikeRoutes = require("./src/routes/movieLikeRoutes");
+const movieRoutes = require("./src/routes/movieRoutes");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -11,6 +11,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 라우터 연결
-app.use("/movie", movieLikeRoutes);
+app.use("/movie", movieRoutes);
 
 module.exports = app;

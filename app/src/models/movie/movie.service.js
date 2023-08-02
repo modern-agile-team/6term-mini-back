@@ -1,11 +1,11 @@
 "use strict";
 
-const movielikeStorage = require("./movie.storage");
+const movieStorage = require("./movie.storage");
 
-class Movielike {
+class Movie {
   async getmovielike() {
     try {
-      return await movielikeStorage.getMovielike();
+      return await movieStorage.getMovielike();
     } catch (error) {
       return { sucess: false, msg: "movielike.service 오류" };
     }
@@ -13,15 +13,12 @@ class Movielike {
 
   async updatemovielike(movieid, userid) {
     try {
-      const like = await movielikeStorage.checkUserMovieLike(movieid, userid);
+      const like = await movieStorage.checkUserMovieLike(movieid, userid);
       if (like) {
-        const response = await movielikeStorage.removeMovieLike(
-          movieid,
-          userid
-        );
+        const response = await movieStorage.removeMovieLike(movieid, userid);
         return response;
       } else {
-        const response = await movielikeStorage.addMovieLike(movieid, userid);
+        const response = await movieStorage.addMovieLike(movieid, userid);
         return response;
       }
     } catch (error) {
@@ -30,4 +27,4 @@ class Movielike {
   }
 }
 
-module.exports = Movielike;
+module.exports = Movie;

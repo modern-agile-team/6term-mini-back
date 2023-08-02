@@ -65,4 +65,5 @@ class movieStorage {
     });
   }
 }
+
 module.exports = movieStorage;

@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const identifyToken = require('../middlewares/identifyToken');
-const tokenController = require('../controllers/tokenController');
 
 router.post('/login', authController.login); // 로그인, 토큰 발급
 router.post('/register', authController.register); // 회원가입
@@ -19,7 +18,5 @@ router.delete('/logout', identifyToken.check.token, authController.logout); // �
 router.delete('/users', identifyToken.check.token, authController.deleteAccount); // 회원탈퇴
 
 router.get('/users/profile', identifyToken.check.token, authController.getProfile); // 프로필 정보 가져오기
-
-// router.post('/token', identifyToken.check.token, tokenController.saveRefreshToken); // 리프레시 토큰 저장
 
 module.exports = router;

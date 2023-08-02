@@ -11,14 +11,16 @@ class Movie {
     }
   }
 
-  async updatemovielike(movieid, userid) {
+  async updatemovielike(movieId, accessToken) {
     try {
-      const like = await movieStorage.checkUserMovieLike(movieid, userid);
+      const decodedToken = await Token.decodeToken(accessToken);
+      const userId = decodedToken.id;
+      const like = await movieStorage.checkUserMovieLike(movieId, userId);
       if (like) {
-        const response = await movieStorage.removeMovieLike(movieid, userid);
+        const response = await movieStorage.removeMovieLike(movieId, userId);
         return response;
       } else {
-        const response = await movieStorage.addMovieLike(movieid, userid);
+        const response = await movieStorage.addMovieLike(movieId, userId);
         return response;
       }
     } catch (error) {

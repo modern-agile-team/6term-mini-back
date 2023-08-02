@@ -44,6 +44,10 @@ class UserStorage {
       const deleteLikesQuery = "DELETE FROM movie_likes WHERE user_id = ?;";
       db.query(deleteLikesQuery, [id]);
 
+      // movie_seat 테이블에서 해당 유저의 좌석 예매 정보 삭제
+      const deleteSeatsQuery = "DELETE FROM movie_seat WHERE user_id = ?;";
+      db.query(deleteSeatsQuery, [id]);
+
       // user 테이블에서 해당 유저의 정보 삭제
       const query = "DELETE FROM user WHERE id = ?;";
       db.query(query, [id], (err, data) => {

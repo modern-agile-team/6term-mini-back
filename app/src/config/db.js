@@ -1,4 +1,4 @@
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 require("dotenv").config(); // 환경 변수를 .env 파일에서 가져오기
 
 const db = mysql.createPool({
@@ -8,6 +8,6 @@ const db = mysql.createPool({
   database: process.env.DB_DATABASE,
 });
 
-db.js();
+db.js;
 
 module.exports = db;

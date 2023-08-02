@@ -1,6 +1,6 @@
 "use strict";
 
-const Movielike = require("../models/movie/movielike.service");
+const Movielike = require("../models/movie/movie.service");
 
 const output = {
   getmovielike: async (req, res) => {

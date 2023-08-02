@@ -1,6 +1,6 @@
 "use strict";
 
-const movielikeStorage = require("./movielike.storage");
+const movielikeStorage = require("./movie.storage");
 
 class Movielike {
   async getmovielike() {

@@ -7,6 +7,7 @@ const identifyToken = require("../middlewares/identifyToken");
 
 router.get("/movies", identifyToken.check.token, ctrl.output.getmovie); // 영화 목록
 router.get("/movies/seat", identifyToken.check.token, ctrl.output.getSeat); // 좌석 조회
+router.get("/movies/seat/user", identifyToken.check.token, ctrl.output.getUserSeat); // 예매된 유저 좌석 조회
 
 router.post("/movies/seat", identifyToken.check.token, ctrl.intput.reserveSeat); // 좌석 예매
 

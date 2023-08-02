@@ -26,6 +26,20 @@ const output = {
       return res.json({ success: false, msg: "좌석 조회 ctrl.js 오류" });
     }
   },
+
+  getUserSeat: async (req, res) => {
+    const accessToken = req.headers.accesstoken;
+
+    try {
+      const movie = new Movie();
+      const response = await movie.getUserSeat(accessToken);
+      return res.json(response);
+
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, msg: "유저 좌석 조회 ctrl.js 오류" });
+    }
+  },
 };
 
 const intput = {

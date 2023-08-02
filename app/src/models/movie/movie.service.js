@@ -30,6 +30,26 @@ class Movie {
     }
   }
 
+  async getUserSeat(accessToken) {
+    try {
+      const decodedToken = await Token.decodeToken(accessToken);
+      const id = decodedToken.id;
+      
+      const seat = await movieStorage.getUserSeat(id);
+      const extractedValues = seat.map((item) => {
+        return {
+          movieId: item.movie_id,
+          seatRow: item.seatRow,
+          seatCol: item.seatCol,
+          seatDate: item.seatDate
+        };
+      });
+      return { sucess: true, msg: "유저 좌석 조회 성공", extractedValues };
+    } catch (error) {
+      return { sucess: false, msg: "유저 좌석 조회 movie.service.js 오류" };
+    }
+  }
+
   async reserveSeat(accessToken, movieId, seatRow, seatCol, seatDate) {
     try {
       const decodedToken = await Token.decodeToken(accessToken);

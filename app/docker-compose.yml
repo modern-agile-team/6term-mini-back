@@ -1,7 +1,7 @@
 version: "3"
 services:
   ma6-mini:
-    image: 2swo/ma6-mini
+    image: 2swo/ma6-mini-back
     ports:
       - "3000:3000"
     env_file:

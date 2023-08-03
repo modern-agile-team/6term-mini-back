@@ -11,11 +11,12 @@ class User {
   async login(loginId, pw) {
     try {
       const userInfo = await UserStorage.login(loginId);
-
+      
       if (!userInfo) {
         return { success: false, msg: "존재하지 않는 아이디입니다." };
       }
-      if (pw !== userInfo.pw) {
+
+      if (pw !== userInfo[0].pw) {
         return { success: false, msg: "비밀번호가 틀렸습니다." };
       }
 

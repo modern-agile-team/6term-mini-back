@@ -8,16 +8,17 @@ class Auth {
   static async crateAccessToken(userInfo) {
     const user = await userInfo;
     const payload = {
-      id: user.id,
+      id: user[0].id,
       tokenType: "accessToken",
-      exp: Math.floor(Date.now() / 1000) + 60 * 5
+      exp: Math.floor(Date.now() / 1000) + 60 * 15
     };
     return jwt.sign(payload, secretKey); // 액세스 토큰 발급
   }
 
   static async crateRefreshToken(userInfo) {
+    const user = await userInfo;
     const payload = {
-      id: userInfo.id,
+      id: user[0].id,
       tokenType: "refreshToken",
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24
     };

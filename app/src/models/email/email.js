@@ -22,8 +22,7 @@ class Email {
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
-        console.log("Email sent:", info.response);
-        return { success: true, msg: "이메일 발송 성공" };
+        return res.status(200).json({ success: true, msg: "이메일 발송 성공" });
       });
 
     } catch (err) {

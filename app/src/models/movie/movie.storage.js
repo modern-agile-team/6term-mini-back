@@ -6,8 +6,8 @@ class movieStorage {
   static async getMovielike() {
     try {
       const sql = `SELECT * FROM movie_likes`;
-      const resolve = await db.query(sql);
-      return resolve[0];
+      const resolve = (await db.query(sql))[0];
+      return resolve;
     } catch (error) {
       console.log("getMovielike moviestorage 오류 :", error);
       return { success: false };
@@ -19,8 +19,8 @@ class movieStorage {
     try {
       const params = [userId, movieId];
       const sql = `SELECT * FROM movie_likes WHERE user_id = ? AND movie_id = ?`;
-      const resolve = await db.query(sql, params);
-      return resolve[0];
+      const resolve = (await db.query(sql, params))[0];
+      return resolve;
     } catch (error) {
       console.log("checkmovielike moviestorage 오류 :", error);
       return { success: false };
@@ -32,8 +32,8 @@ class movieStorage {
     try {
       const params = [userId, movieId];
       const sql = `INSERT INTO movie_likes (user_id, movie_id) VALUES (?, ?)`;
-      const resolve = await db.query(sql, params);
-      return resolve[0];
+      const resolve = (await db.query(sql, params))[0];
+      return resolve;
     } catch (error) {
       console.log("addmovielike moviestorage 오류 :", error);
       return { success: false };
@@ -45,8 +45,8 @@ class movieStorage {
     try {
       const params = [userId, movieId];
       const sql = `DELETE FROM movie_likes WHERE user_id = ? AND movie_id = ?`;
-      const resolve = await db.query(sql, params);
-      return resolve[0];
+      const resolve = (await db.query(sql, params))[0];
+      return resolve;
     } catch (error) {
       console.log("removeMovielike moviestorage 오류 :", error);
       return { success: false };

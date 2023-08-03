@@ -4,7 +4,6 @@ const movieStorage = require("./movie.storage");
 const Token = require("../Token/Token");
 
 class Movie {
-
   async getSeat() {
     try {
       const seat = await movieStorage.getSeat();

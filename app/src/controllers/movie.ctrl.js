@@ -3,7 +3,6 @@
 const Movie = require("../models/movie/movie.service");
 
 const output = {
-
   getSeat: async (req, res) => {
     try {
       const movie = new Movie();

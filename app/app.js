@@ -13,6 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // 라우터 연결
-app.use("/movie", movieRoutes);
+app.use("/movies", movieRoutes);
 
 module.exports = app;

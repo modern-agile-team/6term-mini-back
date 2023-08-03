@@ -3,58 +3,51 @@
 const db = require("../../config/db");
 
 class movieStorage {
-
-  static getSeat() {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM movie_seat";
-      db.query(query, (err, results) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(results);
-      });
-    });
+  static async getSeat() {
+    try {
+      const sql = `SELECT * FROM movie_seat`;
+      const resolve = (await db.query(sql))[0][0];
+      return resolve;
+    } catch (error) {
+      console.log("getSeat moviestorage 오류 :", error);
+      return { succes: false };
+    }
   }
 
-  static getUserSeat(id) {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM movie_seat WHERE user_id = ?";
-      db.query(query, [id], (err, results) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(results);
-      });
-    });
+  static async getUserSeat(id) {
+    try {
+      const req = [id];
+      const sql = `SELECT * FROM movie_seat WHERE user_id = ?`;
+      const resolve = (await db.query(sql, req))[0][0];
+      return resolve;
+    } catch (error) {
+      console.log("getUserSeat moviestorage 오류 :", error);
+      return { succes: false };
+    }
   }
 
-  static reserveSeat(id, movieId, seatRow, seatCol, seatDate) {
-    return new Promise((resolve, reject) => {
-      const query =
-        "INSERT INTO movie_seat (user_id, movie_id, seatRow, seatCol, seatDate) VALUES (?, ?, ?, ?, ?)";
-      db.query(
-        query,
-        [id, movieId, seatRow, seatCol, seatDate],
-        (err, results) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(results);
-        }
-      );
-    });
+  static async reserveSeat(id, movieId, seatRow, seatCol, seatDate) {
+    try {
+      const req = [id, movieId, seatRow, seatCol, seatDate];
+      const sql = `INSERT INTO movie_seat (user_id, movie_id, seatRow, seatCol, seatDate) VALUES (?, ?, ?, ?, ?)`;
+      const resolve = (await db.query(sql, req))[0][0];
+      return resolve;
+    } catch (error) {
+      console.log("reserveSeat moviestorage 오류 :", error);
+      return { succes: false };
+    }
   }
 
-  static cancelSeat(id) {
-    return new Promise((resolve, reject) => {
-      const query = "DELETE FROM movie_seat WHERE id = ?";
-      db.query(query, [id], (err, results) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(results);
-      });
-    });
+  static async cancelSeat(id) {
+    try {
+      const req = [id];
+      const sql = `DELETE FROM movie_seat WHERE id = ?`;
+      const resolve = (await db.query(sql, req))[0][0];
+      return resolve;
+    } catch (error) {
+      console.log("cacelSeat moviestorage 오류 : ", error);
+      return { succes: false };
+    }
   }
 }
 

@@ -12,7 +12,6 @@ class Movie {
       const movieLike = await Promise.all(
         idArray.map((id) => movieStorage.getMovielike(id))
       );
-  
       const movieInfo = movie.map((item, index) => {
         const like = movieLike[index][0]?.count || 0;
         return { ...item, like };

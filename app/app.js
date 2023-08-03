@@ -14,7 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // 라우터 연결
-
 app.use("/movies", movieRoutes);
 app.use("/auth", authRoutes);
 

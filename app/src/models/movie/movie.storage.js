@@ -3,16 +3,14 @@
 const db = require("../../config/db");
 
 class movieStorage {
-  static getmovie() {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM movie";
-      db.query(query, (err, results) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(results);
-      });
-    });
+  static async getmovie() {
+    try {
+      const sql = `SELECT * FROM movie`;
+      const results = (await db.query(sql))[0];
+      return results;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   static getSeat() {

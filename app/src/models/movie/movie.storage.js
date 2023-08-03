@@ -3,10 +3,10 @@
 const db = require("../../config/db");
 
 class movieStorage {
-  static async getMovielike() {
+  static async getMovielike(movieId) {
     try {
-      const sql = `SELECT * FROM movie_likes`;
-      const resolve = (await db.query(sql))[0];
+      const sql = `SELECT COUNT(movie_id) AS count FROM movie_likes WHERE movie_id IN (?)`;
+      const resolve = (await db.query(sql, [movieId]))[0];
       return resolve;
     } catch (error) {
       console.log("getMovielike moviestorage 오류 :", error);
@@ -20,6 +20,9 @@ class movieStorage {
       const params = [userId, movieId];
       const sql = `SELECT * FROM movie_likes WHERE user_id = ? AND movie_id = ?`;
       const resolve = (await db.query(sql, params))[0];
+      if (resolve.length === 0) {
+        return false;
+      }
       return resolve;
     } catch (error) {
       console.log("checkmovielike moviestorage 오류 :", error);

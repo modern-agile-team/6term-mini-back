@@ -8,7 +8,6 @@ const output = {
       const movielike = new Movie();
       const data = await movielike.getmovielike();
 
-      //   res.render("home/mini", { data });
       res.json(data);
     } catch (error) {
       console.log(error);

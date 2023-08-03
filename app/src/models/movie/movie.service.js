@@ -6,7 +6,19 @@ const Token = require("../Token/Token");
 class Movie {
   async getmovie() {
     try {
-      return await movieStorage.getmovie();
+      const movie = await movieStorage.getmovie();
+
+      const idArray = movie.map((item) => item.id);
+      const movieLike = await Promise.all(
+        idArray.map((id) => movieStorage.getMovielike(id))
+      );
+  
+      const movieInfo = movie.map((item, index) => {
+        const like = movieLike[index][0]?.count || 0;
+        return { ...item, like };
+      });
+
+      return { sucess: true, msg: "영화 조회 성공", movieInfo };
     } catch (error) {
       console.log(error);
       return { sucess: false, msg: "movie.js 오류" };
@@ -103,14 +115,6 @@ class Movie {
     } catch (error) {
       console.log(error);
       return { sucess: false, msg: "좌석 예매 취소 movie.service.js 오류" };
-    }
-  }
-
-  async getmovielike() {
-    try {
-      return await movieStorage.getMovielike();
-    } catch (error) {
-      return { sucess: false, msg: "좋아요 가져오기 movie.service 오류" };
     }
   }
 

@@ -68,9 +68,10 @@ class movieStorage {
     });
   }
 
-  static getMovielike() {
+  static getMovielike(movieId) {
     return new Promise((resolve, reject) => {
-      db.query("SELECT * FROM movie_likes", (err, results) => {
+      const query = "SELECT COUNT(movie_id) AS count FROM movie_likes WHERE movie_id IN (?)";
+      db.query(query, [movieId], (err, results) => {
         if (err) {
           reject(err);
         }

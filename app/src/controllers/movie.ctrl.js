@@ -14,6 +14,7 @@ const output = {
       return res.json({ success: false, msg: "ctrl.js 오류" });
     }
   },
+  
   getmovie: async (req, res) => {
     try {
       const movie = new Movie();

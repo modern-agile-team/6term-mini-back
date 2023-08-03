@@ -2,6 +2,7 @@
 
 const express = require("express");
 const app = express();
+
 const cors = require("cors");
 const movieRoutes = require("./src/routes/movieRoutes");
 const dotenv = require("dotenv");

@@ -16,7 +16,7 @@ class movieStorage {
   static async getSeat() {
     try {
       const sql = `SELECT * FROM movie_seat`;
-      const resolve = (await db.query(sql))[0][0];
+      const resolve = (await db.query(sql))[0];
       return resolve;
     } catch (error) {
       console.log("getSeat moviestorage 오류 :", error);
@@ -28,7 +28,7 @@ class movieStorage {
     try {
       const req = [id];
       const sql = `SELECT * FROM movie_seat WHERE user_id = ?`;
-      const resolve = (await db.query(sql, req))[0][0];
+      const resolve = (await db.query(sql, req))[0];
       return resolve;
     } catch (error) {
       console.log("getUserSeat moviestorage 오류 :", error);
@@ -40,7 +40,7 @@ class movieStorage {
     try {
       const req = [id, movieId, seatRow, seatCol, seatDate];
       const sql = `INSERT INTO movie_seat (user_id, movie_id, seatRow, seatCol, seatDate) VALUES (?, ?, ?, ?, ?)`;
-      const resolve = (await db.query(sql, req))[0][0];
+      const resolve = (await db.query(sql, req))[0];
       return resolve;
     } catch (error) {
       console.log("reserveSeat moviestorage 오류 :", error);
@@ -52,7 +52,7 @@ class movieStorage {
     try {
       const req = [id];
       const sql = `DELETE FROM movie_seat WHERE id = ?`;
-      const resolve = (await db.query(sql, req))[0][0];
+      const resolve = (await db.query(sql, req))[0];
       return resolve;
     } catch (error) {
       console.log("cacelSeat moviestorage 오류 : ", error);
@@ -60,10 +60,10 @@ class movieStorage {
     }
   }
 
-  static async getMovielike() {
+  static async getMovielike(movieId) {
     try {
-      const sql = `SELECT * FROM movie_likes`;
-      const resolve = (await db.query(sql))[0];
+      const sql = `SELECT COUNT(movie_id) AS count FROM movie_likes WHERE movie_id IN (?)`;
+      const resolve = (await db.query(sql, [movieId]))[0];
       return resolve;
     } catch (error) {
       console.log("getMovielike moviestorage 오류 :", error);
@@ -77,6 +77,9 @@ class movieStorage {
       const params = [userId, movieId];
       const sql = `SELECT * FROM movie_likes WHERE user_id = ? AND movie_id = ?`;
       const resolve = (await db.query(sql, params))[0];
+      if (resolve.length === 0) {
+        return false;
+      }
       return resolve;
     } catch (error) {
       console.log("checkmovielike moviestorage 오류 :", error);

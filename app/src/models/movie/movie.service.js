@@ -12,6 +12,7 @@ class Movie {
       const movieLike = await Promise.all(
         idArray.map((id) => movieStorage.getMovielike(id))
       );
+  
       const movieInfo = movie.map((item, index) => {
         const like = movieLike[index][0]?.count || 0;
         return { ...item, like };
@@ -57,6 +58,9 @@ class Movie {
           seatDate: item.seatDate,
         };
       });
+      if (extractedValues.length === 0) {
+        return { sucess: false, msg: "예매된 좌석이 없습니다." };
+      }
       return { sucess: true, msg: "유저 좌석 조회 성공", extractedValues };
     } catch (error) {
       console.log(error);
@@ -124,10 +128,10 @@ class Movie {
       const like = await movieStorage.checkUserMovieLike(movieid, userId);
       if (like) {
         const response = await movieStorage.removeMovieLike(movieid, userId);
-        return response;
+        return { success: true, msg: "좋아요를 취소했습니다."};
       } else {
         const response = await movieStorage.addMovieLike(movieid, userId);
-        return response;
+        return { success: true, msg: "좋아요를 눌렀습니다."};
       }
     } catch (error) {
       return { success: false, msg: "좋아요 업데이트 movie.service 오류" };

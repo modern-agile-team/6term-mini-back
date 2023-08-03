@@ -8,7 +8,7 @@ class Auth {
   static async crateAccessToken(userInfo) {
     const user = await userInfo;
     const payload = {
-      id: user[0].id,
+      id: user.id,
       tokenType: "accessToken",
       exp: Math.floor(Date.now() / 1000) + 60 * 15
     };
@@ -18,7 +18,7 @@ class Auth {
   static async crateRefreshToken(userInfo) {
     const user = await userInfo;
     const payload = {
-      id: user[0].id,
+      id: user.id,
       tokenType: "refreshToken",
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24
     };

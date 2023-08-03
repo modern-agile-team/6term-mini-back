@@ -23,7 +23,7 @@ async function login(req, res) {
 // 로그아웃
 async function logout(req, res) {
   const refreshToken = req.headers.refreshtoken; // 로그아웃 요청에서 리프레시 토큰 가져오기
-  
+
   try {
     const user = new User();
     const response = await user.logout(refreshToken); // 로그아웃

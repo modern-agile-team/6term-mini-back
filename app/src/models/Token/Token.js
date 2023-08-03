@@ -29,7 +29,7 @@ class Token {
     if (check.success) {
       const userInfo = this.decodeToken(refreshToken);
       const newAccessToken = await Auth.crateAccessToken(userInfo);
-      console.log("액세스 토큰 갱신됨:", newAccessToken);
+
       return {
         success: true,
         msg: "토큰이 갱신되었습니다.",

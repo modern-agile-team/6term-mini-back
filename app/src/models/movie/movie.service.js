@@ -24,7 +24,7 @@ class Movie {
         return response;
       }
     } catch (error) {
-      return { success: false, msg: "movielike.service 오류" };
+      return { success: false, msg: "좋아요 업데이트 movielike.service 오류" };
     }
   }
 }

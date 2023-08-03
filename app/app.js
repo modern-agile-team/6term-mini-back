@@ -11,6 +11,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 라우터 연결
-app.use("/movie", movieRoutes);
+app.use("/movies", movieRoutes);
 
 module.exports = app;

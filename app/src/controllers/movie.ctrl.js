@@ -7,9 +7,7 @@ const output = {
     try {
       const movie = new Movie();
       const data = await movie.getmovie();
-
-      //   res.render("home/mini", { data });
-      res.json(data);
+      return res.json(data);
     } catch (error) {
       console.log(error);
       return res.json({ success: false, msg: "ctrl.js 오류" });

@@ -3,22 +3,10 @@
 const Movie = require("../models/movie/movie.service");
 
 const output = {
-  getmovielike: async (req, res) => {
-    try {
-      const movielike = new Movie();
-      const data = await movielike.getmovielike();
-
-      res.json(data);
-    } catch (error) {
-      console.log(error);
-      return res.json({ success: false, msg: "ctrl.js 오류" });
-    }
-  },
-  
   getmovie: async (req, res) => {
     try {
       const movie = new Movie();
-      const data = await movie.getmovie();
+      const data = await movie.getMovie();
       return res.json(data);
     } catch (error) {
       console.log(error);

@@ -7,8 +7,8 @@ class UserStorage {
   static async login(loginId) {
     try {
       const sql = "SELECT * FROM user WHERE login_id = ?;";
-      const data = (await db.query(sql, [loginId]))[0];
-      if (data.length === 0) return false;
+      const data = (await db.query(sql, [loginId]))[0][0];
+      if (!data.id) return false;
       return data;
     } catch (error) {
       console.error(error);

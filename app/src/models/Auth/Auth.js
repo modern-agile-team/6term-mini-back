@@ -6,17 +6,17 @@ const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 �
 
 class Auth {
   static async crateAccessToken(userInfo) {
-    const user = (await userInfo)[0];
+    const user = await userInfo;
     const payload = {
       id: user.id,
       tokenType: "accessToken",
-      exp: Math.floor(Date.now() / 1000) + 60 * 15
+      exp: Math.floor(Date.now() / 1000) + 60 * 1
     };
     return jwt.sign(payload, secretKey); // 액세스 토큰 발급
   }
 
   static async crateRefreshToken(userInfo) {
-    const user = (await userInfo)[0];
+    const user = await userInfo;
     const payload = {
       id: user.id,
       tokenType: "refreshToken",

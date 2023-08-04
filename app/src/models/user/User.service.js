@@ -89,10 +89,11 @@ class User {
   }
 
   // 회원탈퇴
-  async deleteAccount(accesstoken) {
+  async deleteAccount(accesstoken, refreshToken) {
     try {
       const decodeToken = await Token.decodeToken(accesstoken);
       const id = decodeToken.id;
+      await this.logout(refreshToken);
       const deleteAccount = await UserStorage.deleteAccount(id);
 
       if (!deleteAccount.success) {

@@ -53,10 +53,11 @@ async function register(req, res) {
 // 회원탈퇴
 async function deleteAccount(req, res) {
   const accesstoken = req.headers.accesstoken; // 회원탈퇴 요청에서 아이디 가져오기
+  const refreshToken = req.headers.refreshtoken; // 회원탈퇴 요청에서 리프레시 토큰 가져오기
 
   try {
     const user = new User();
-    const response = await user.deleteAccount(accesstoken); // 회원탈퇴
+    const response = await user.deleteAccount(accesstoken, refreshToken); // 회원탈퇴
     return res.status(200).json(response);
     
   } catch (error) {

@@ -4,20 +4,9 @@ const movieStorage = require("./movie.storage");
 const Token = require("../Token/Token");
 
 class Movie {
-  async getmovie() {
+  async getMovie() {
     try {
-      const movie = await movieStorage.getmovie();
-
-      const idArray = movie.map((item) => item.id);
-      const movieLike = await Promise.all(
-        idArray.map((id) => movieStorage.getMovielike(id))
-      );
-  
-      const movieInfo = movie.map((item, index) => {
-        const like = movieLike[index][0]?.count || 0;
-        return { ...item, like };
-      });
-
+      const movieInfo = await movieStorage.getMovie();
       return { sucess: true, msg: "영화 조회 성공", movieInfo };
     } catch (error) {
       console.log(error);
@@ -28,15 +17,7 @@ class Movie {
   async getSeat() {
     try {
       const seat = await movieStorage.getSeat();
-      const extractedValues = seat.map((item) => {
-        return {
-          movieId: item.movie_id,
-          seatRow: item.seatRow,
-          seatCol: item.seatCol,
-          seatDate: item.seatDate,
-        };
-      });
-      return { sucess: true, msg: "좌석 조회 성공", extractedValues };
+      return { sucess: true, msg: "좌석 조회 성공", seat };
     } catch (error) {
       console.log(error);
       return { sucess: false, msg: "좌석 조회 movie.service.js 오류" };
@@ -45,23 +26,12 @@ class Movie {
 
   async getUserSeat(accessToken) {
     try {
-      const decodedToken = await Token.decodeToken(accessToken);
-      const id = decodedToken.id;
-
-      const seat = await movieStorage.getUserSeat(id);
-      const extractedValues = seat.map((item) => {
-        return {
-          id: item.id,
-          movieId: item.movie_id,
-          seatRow: item.seatRow,
-          seatCol: item.seatCol,
-          seatDate: item.seatDate,
-        };
-      });
-      if (extractedValues.length === 0) {
+      const id = await Token.decodeToken(accessToken);
+      const userSeat = await movieStorage.getUserSeat(id);
+      if (!userSeat.length) {
         return { sucess: false, msg: "예매된 좌석이 없습니다." };
       }
-      return { sucess: true, msg: "유저 좌석 조회 성공", extractedValues };
+      return { sucess: true, msg: "유저 좌석 조회 성공", userSeat };
     } catch (error) {
       console.log(error);
       return { sucess: false, msg: "유저 좌석 조회 movie.service.js 오류" };
@@ -70,20 +40,15 @@ class Movie {
 
   async reserveSeat(accessToken, movieId, seatRow, seatCol, seatDate) {
     try {
-      const decodedToken = await Token.decodeToken(accessToken);
-      const id = decodedToken.id;
+      const id = await Token.decodeToken(accessToken);
+      const seats = await movieStorage.checkSeat(
+        movieId,
+        seatRow,
+        seatCol,
+        seatDate
+      );
 
-      const seats = await this.getSeat();
-      const isSeatReserved = seats.extractedValues.some((seat) => {
-        return (
-          seat.movieId === Number(movieId) &&
-          seat.seatRow === Number(seatRow) &&
-          seat.seatCol === Number(seatCol) &&
-          seat.seatDate === Number(seatDate)
-        );
-      });
-
-      if (isSeatReserved) {
+      if (seats) {
         return { sucess: false, msg: "이미 예매된 좌석입니다." };
       }
 
@@ -94,8 +59,7 @@ class Movie {
         seatCol,
         seatDate
       );
-
-      if (reserveSeat.affectedRows === 1) {
+      if (reserveSeat.affectedRows) {
         return { sucess: true, msg: "예매를 성공했습니다." };
       } else {
         return { sucess: false, msg: "예매를 실패했습니다." };
@@ -109,8 +73,7 @@ class Movie {
   async cancelSeat(id) {
     try {
       const cancelSeat = await movieStorage.cancelSeat(id);
-
-      if (cancelSeat.affectedRows === 1) {
+      if (cancelSeat.affectedRows) {
         return { sucess: true, msg: "예매를 취소했습니다." };
       } else {
         return { sucess: false, msg: "예매되지 않은 좌석입니다." };
@@ -123,15 +86,14 @@ class Movie {
 
   async updatemovielike(movieid, accessToken) {
     try {
-      const decodedToken = await Token.decodeToken(accessToken);
-      const userId = decodedToken.id;
+      const userId = await Token.decodeToken(accessToken);
       const like = await movieStorage.checkUserMovieLike(movieid, userId);
       if (like) {
-        const response = await movieStorage.removeMovieLike(movieid, userId);
-        return { success: true, msg: "좋아요를 취소했습니다."};
+        await movieStorage.removeMovieLike(movieid, userId);
+        return { success: true, msg: "좋아요를 취소했습니다." };
       } else {
-        const response = await movieStorage.addMovieLike(movieid, userId);
-        return { success: true, msg: "좋아요를 눌렀습니다."};
+        await movieStorage.addMovieLike(movieid, userId);
+        return { success: true, msg: "좋아요를 눌렀습니다." };
       }
     } catch (error) {
       return { success: false, msg: "좋아요 업데이트 movie.service 오류" };

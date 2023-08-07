@@ -10,7 +10,7 @@ class Auth {
     const payload = {
       id: user.id,
       tokenType: "accessToken",
-      exp: Math.floor(Date.now() / 1000) + 60 * 15
+      exp: Math.floor(Date.now() / 1000) + 60 * 30,
     };
     return jwt.sign(payload, secretKey); // 액세스 토큰 발급
   }
@@ -20,7 +20,7 @@ class Auth {
     const payload = {
       id: user.id,
       tokenType: "refreshToken",
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     };
     return jwt.sign(payload, secretKey); // 리프레시 토큰 발급
   }

@@ -20,20 +20,10 @@ const check = {
 
     } catch (error) {
       if (error.name === "TokenExpiredError") {
-        const refreshToken = req.headers.refreshtoken;
-        if (!refreshToken) {
-          return res.status(401).json({
-            success: false,
-            msg: "리프레시 토큰이 없습니다."
-          });
-        }
-        const result = await Token.checkRefreshToken(refreshToken);
-        if (result.success) {
-          req.accesstoken = result.accessToken;
-          return next();
-        } else {
-          return res.status(401).json(result);
-        }
+        return res.status(401).json({
+          success: false,
+          msg: "토큰이 만료되었습니다."
+        });
       }
 
       if (error.name === "JsonWebTokenError") {
@@ -42,6 +32,28 @@ const check = {
           msg: "토큰이 유효하지 않습니다."
         });
       }
+    }
+  },
+
+  newToken: async (req, res) => {
+    try {
+      const refreshToken = req.headers.refreshtoken;
+      if (!refreshToken) {
+        return res.status(401).json({
+          success: false,
+          msg: "토큰이 없습니다."
+        });
+      }
+      const response = await Token.checkRefreshToken(refreshToken);
+      if (!response.success) {
+        return res.status(401).json(response);
+      }
+
+      return res.status(200).json(response);
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "토큰 갱신 에러" });
     }
   },
 }

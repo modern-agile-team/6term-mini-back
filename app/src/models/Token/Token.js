@@ -27,7 +27,7 @@ class Token {
     const check = await UserStorage.checkRefreshToken(refreshToken);
 
     if (check.success) {
-      const userInfo = this.decodeToken(refreshToken);
+      const userInfo = jwt.decode(refreshToken);
       const newAccessToken = await Auth.crateAccessToken(userInfo);
 
       return {

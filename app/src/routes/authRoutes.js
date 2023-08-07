@@ -14,6 +14,8 @@ router.post('/users/email', authController.check.checkUserEmail); // 이메일 �
 router.post('/id', authController.check.findLoginId); // 아이디 찾기
 router.post('/pw', authController.check.findPw); // 비밀번호 찾기
 
+router.post('/token', identifyToken.check.newToken); // 토큰 갱신
+
 router.delete('/logout', identifyToken.check.token, authController.sign.logout); // 로그아웃 (DB 리프레시 토큰 삭제)
 router.delete('/users', identifyToken.check.token, authController.sign.deleteAccount); // 회원탈퇴
 

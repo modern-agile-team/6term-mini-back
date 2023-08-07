@@ -15,14 +15,7 @@ const check = {
           msg: "토큰이 없습니다."
         });
       }
-
-      const decodedToken = jwt.verify(token, secretKey);
-      if (!decodedToken) {
-        return res.status(401).json({
-          success: false,
-          msg: "토큰이 만료되었습니다."
-        });
-      }
+      jwt.verify(token, secretKey);
       return next();
 
     } catch (error) {
@@ -41,7 +34,6 @@ const check = {
         } else {
           return res.status(401).json(result);
         }
-
       }
 
       if (error.name === "JsonWebTokenError") {

@@ -8,7 +8,7 @@ class UserStorage {
     try {
       const sql = "SELECT * FROM user WHERE login_id = ?;";
       const data = (await db.query(sql, [loginId]))[0][0];
-      if (!data.id) return false;
+      if (!data) return false;
       return data;
     } catch (error) {
       console.error(error);
@@ -22,8 +22,7 @@ class UserStorage {
       const sql = "DELETE FROM token WHERE refresh_token = ?;";
       const data = (await db.query(sql, [refreshToken]))[0];
 
-      if (data.affectedRows === 0)
-        return { success: false, msg: "refreshToken is not valid" };
+      if (!data.affectedRows) return { success: false, msg: "refreshToken is not valid" };
       return { success: true, msg: "로그아웃 완료" };
     } catch (error) {
       console.error(error);
@@ -46,19 +45,9 @@ class UserStorage {
   // 회원탈퇴
   static async deleteAccount(id) {
     try {
-      // movie_seat 테이블에서 해당 유저의 좌석 예매 정보 삭제
-      const deleteSeatsQuery = "DELETE FROM movie_seat WHERE user_id = ?;";
-      await db.query(deleteSeatsQuery, [id]);
-
-      // movie_likes 테이블에서 해당 유저의 좋아요 정보 삭제
-      const deleteLikesQuery = "DELETE FROM movie_likes WHERE user_id = ?;";
-      await db.query(deleteLikesQuery, [id]);
-
-      // movie_likes 테이블에서 해당 유저의 좋아요 정보 삭제
       const sql = "DELETE FROM user WHERE id = ?;";
       const data = (await db.query(sql, [id]))[0];
-      if (data.affectedRows === 0)
-        return { success: false, msg: "존재하지 않는 계정입니다." };
+      if (!data.affectedRows) return { success: false, msg: "존재하지 않는 계정입니다." };
       return { success: true, msg: "계정 삭제 완료" };
     } catch (error) {
       console.error(error);
@@ -69,10 +58,8 @@ class UserStorage {
   // 아이디 중복 검사
   static async checkUserLoginId(loginId) {
     try {
-      const sql =
-        "SELECT EXISTS (SELECT * FROM user WHERE login_id = ?) AS success;";
-      const data = (await db.query(sql, [loginId]))[0][0];
-      return data.success;
+      const sql = "SELECT EXISTS (SELECT * FROM user WHERE login_id = ?) AS success;";
+      return (await db.query(sql, [loginId]))[0][0].success;
     } catch (error) {
       console.error(error);
       return false;
@@ -82,10 +69,8 @@ class UserStorage {
   // 이메일 중복 검사
   static async checkUserEmail(email) {
     try {
-      const sql =
-        "SELECT EXISTS (SELECT * FROM user WHERE email = ?) AS success;";
-      const data = (await db.query(sql, [email]))[0][0];
-      return data.success;
+      const sql = "SELECT EXISTS (SELECT * FROM user WHERE email = ?) AS success;";
+      return (await db.query(sql, [email]))[0][0].success;
     } catch (error) {
       console.error(error);
       return false;
@@ -96,8 +81,10 @@ class UserStorage {
   static async findLoginId(email) {
     try {
       const sql = "SELECT login_id FROM user WHERE email = ?;";
-      const data = (await db.query(sql, [email]))[0][0];
-      return data.login_id;
+      const data = (await db.query(sql, [email]))[0][0].login_id;
+      
+      if (!data) return false;
+      return data;
     } catch (error) {
       console.error(error);
       return false;
@@ -108,8 +95,7 @@ class UserStorage {
   static async findPw(loginId, email) {
     try {
       const sql = "SELECT pw FROM user WHERE login_id = ? AND email = ?;";
-      const data = (await db.query(sql, [loginId, email]))[0][0];
-      return data.pw;
+      return (await db.query(sql, [loginId, email]))[0][0].pw;
     } catch (error) {
       console.error(error);
       return false;
@@ -120,8 +106,7 @@ class UserStorage {
   static async getProfile(id) {
     try {
       const sql = "SELECT login_id AS loginId, email FROM user WHERE id = ?;"; // id로 로그인 아이디와 이메일을 가져옴
-      const data = (await db.query(sql, [id]))[0][0];
-      return data;
+      return (await db.query(sql, [id]))[0][0];
     } catch (error) {
       console.error(error);
       return false;

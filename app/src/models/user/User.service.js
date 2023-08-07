@@ -4,7 +4,6 @@ const UserStorage = require("./UserStorage");
 const Auth = require("../Auth/Auth");
 const Token = require("../Token/Token");
 const Mail = require("../email/email");
-const allowedCharactersRegex = /^[A-Za-z0-9!@#$%^&*()_+={}[\]:;"'<>,.?/~`|-]+$/; // 허용되는 문자열 정규식
 
 class User {
   // 로그인
@@ -12,7 +11,7 @@ class User {
     try {
       const userInfo = await UserStorage.login(loginId);
 
-      if (!userInfo) {
+      if (!userInfo.id) {
         return { success: false, msg: "존재하지 않는 아이디입니다." };
       }
 
@@ -23,11 +22,10 @@ class User {
       const accessToken = await Auth.crateAccessToken(userInfo);
       const refreshToken = await Auth.crateRefreshToken(userInfo);
 
-      Token.saveRefreshToken(refreshToken); // 리프레시 토큰 저장
+      this.saveRefreshToken(refreshToken); // 리프레시 토큰 저장
 
       return {
         success: true,
-        // msg: "로그인 성공. 토큰이 발급되었습니다!",
         accessToken: accessToken,
         refreshToken: refreshToken
       };
@@ -53,11 +51,6 @@ class User {
   // 회원가입
   async register(loginId, email, pw) {
     try {
-      const checkInputValid = this.checkInputValid(loginId, email, pw);
-      if (!checkInputValid.success) {
-        return { success: false, msg: `${checkInputValid.msg} 을(를) 입력해주세요.` };
-      }
-
       const checkInputValidChar = this.checkInputValidChar(loginId, email, pw);
       if (!checkInputValidChar.success) {
         return { success: false, msg: `${checkInputValidChar.msg} 에 허용되지 않는 문자열이 포함되어 있습니다.` };
@@ -89,18 +82,16 @@ class User {
   }
 
   // 회원탈퇴
-  async deleteAccount(accesstoken, refreshToken) {
+  async deleteAccount(accesstoken) {
     try {
-      const decodeToken = await Token.decodeToken(accesstoken);
-      const id = decodeToken.id;
-      await this.logout(refreshToken);
+      const id = await Token.decodeToken(accesstoken);
       const deleteAccount = await UserStorage.deleteAccount(id);
 
       if (!deleteAccount.success) {
         return { success: false, msg: deleteAccount.msg };
       }
-
       return deleteAccount;
+      
     } catch (err) {
       return { success: false, msg: "회원탈퇴 에러" };
     }
@@ -151,8 +142,7 @@ class User {
   // 프로필 정보 가져오기
   async getProfile(accesstoken) {
     try {
-      const decodeToken = await Token.decodeToken(accesstoken);
-      const id = decodeToken.id;
+      const id = await Token.decodeToken(accesstoken);
       const profile = await UserStorage.getProfile(id);
 
       if (!profile) {
@@ -165,22 +155,19 @@ class User {
     }
   }
 
-  // 공백 확인
-  checkInputValid(loginId, email, pw) {
-    if (!loginId) {
-      return { success: false, msg: "아이디" };
+  // 리프레시 토큰 저장
+  async saveRefreshToken(refreshToken) {
+    try {
+      return await Token.saveRefreshToken(refreshToken);
+    } catch (error) {
+      console.log(error);
+      return { success: false, msg: "리프레시 토큰 저장 에러" };
     }
-    if (!email) {
-      return { success: false, msg: "이메일" };
-    }
-    if (!pw) {
-      return { success: false, msg: "비밀번호" };
-    }
-    return { success: true };
   }
 
   // 허용되지 않는 문자열 확인
   checkInputValidChar(loginId, email, pw) {
+    const allowedCharactersRegex = /^[A-Za-z0-9!@#$%^&*()_+={}[\]:;"'<>,.?/~`|-]+$/; // 허용되는 문자열 정규식
     if (!allowedCharactersRegex.test(loginId)) {
       return { success: false, msg: "아이디" };
     }

@@ -9,7 +9,7 @@ const secretKey = process.env.JWT_SECRET_KEY; // 환경 변수에서 시크릿 �
 class Token {
   // 토큰 디코딩
   static async decodeToken(token) {
-    return jwt.decode(token);
+    return jwt.decode(token).id;
   }
 
   // 리프레시 토큰 저장
@@ -27,7 +27,7 @@ class Token {
     const check = await UserStorage.checkRefreshToken(refreshToken);
 
     if (check.success) {
-      const userInfo = this.decodeToken(refreshToken);
+      const userInfo = jwt.decode(refreshToken);
       const newAccessToken = await Auth.crateAccessToken(userInfo);
 
       return {

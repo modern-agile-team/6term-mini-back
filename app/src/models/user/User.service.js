@@ -53,11 +53,37 @@ class User {
     try {
       const checkInputValidChar = this.checkInputValidChar(loginId, email, pw);
       if (!checkInputValidChar.success) {
-        return { success: false, msg: `${checkInputValidChar.msg} 에 허용되지 않는 문자열이 포함되어 있습니다.` };
+        return { success: false, msg: `${checkInputValidChar.msg}에 허용되지 않는 문자열이 포함되어 있습니다.` };
       }
 
       if (!this.checkEmailValid(email)) {
         return { success: false, msg: "이메일 형식이 올바르지 않습니다." };
+      }
+
+      if (loginId.length < 4 || loginId.length > 16) {
+        return { success: false, msg: "아이디는 최소 4자 이상 16자 이내여야 합니다." };
+      }
+
+      if (pw.length < 8 || pw.length > 20) {
+        return { success: false, msg: "비밀번호는 최소 8자 이상 20자 이내여야 합니다." };
+      }
+
+      const consecutiveCharsRegex = /(.)\1\1/;
+      if (consecutiveCharsRegex.test(pw)) {
+        return { success: false, msg: "비밀번호에 숫자가 3자 이상 연속되는 것은 허용되지 않습니다." };
+      }
+
+      const numericPatternRegex = /(012|123|234|345|456|567|678|789|890)/;
+      if (numericPatternRegex.test(pw)) {
+        return { success: false, msg: "비밀번호에 3자 이상 연속된 숫자 패턴은 허용되지 않습니다." };
+      }
+
+      const hasSpecialChar = /[!@#$%^&*()_+={}[\]:;"'<>,.?/~`|-]/.test(pw);
+      const hasNumber = /[0-9]/.test(pw);
+      const hasLetter = /[A-Za-z]/.test(pw);
+
+      if (!hasSpecialChar || !hasNumber || !hasLetter) {
+        return { success: false, msg: "비밀번호에 영문자, 숫자, 특수문자가 반드시 1자 이상 포함되어야 합니다." };
       }
 
       const userExists = await UserStorage.checkUserLoginId(loginId);

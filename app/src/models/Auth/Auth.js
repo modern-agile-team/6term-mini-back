@@ -10,7 +10,7 @@ class Auth {
     const payload = {
       id: user.id,
       tokenType: "accessToken",
-      exp: Math.floor(Date.now() / 1000) + 60 * 1
+      exp: Math.floor(Date.now() / 1000) + 60 * 20
     };
     return jwt.sign(payload, secretKey); // 액세스 토큰 발급
   }

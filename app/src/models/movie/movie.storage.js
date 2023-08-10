@@ -87,16 +87,6 @@ class movieStorage {
     }
   }
 
-  static async getMovielike(movieId) {
-    try {
-      const sql = `SELECT COUNT(movie_id) AS count FROM movie_likes WHERE movie_id IN (?)`;
-      return (await db.query(sql, [movieId]))[0];
-    } catch (error) {
-      console.log("getMovielike moviestorage 오류 :", error);
-      return { success: false };
-    }
-  }
-
   static async checkUserMovieLike(movieId, userId) {
     // 로그인한 유저가 해당 영화에 좋아요를 클릭했는지 확인
     try {

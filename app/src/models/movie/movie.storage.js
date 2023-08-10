@@ -76,6 +76,17 @@ class movieStorage {
     }
   }
 
+  static async deleteExpiredSeats() {
+    try {
+      const sql = `DELETE FROM movie_seat WHERE seatDate < CURDATE()`;
+      await db.query(sql);
+      return { success: true, msg: "만료된 좌석 삭제 성공" };
+    } catch (error) {
+      console.log("deleteExpiredSeats moviestorage 오류:", error);
+      return { success: false };
+    }
+  }
+
   static async getMovielike(movieId) {
     try {
       const sql = `SELECT COUNT(movie_id) AS count FROM movie_likes WHERE movie_id IN (?)`;

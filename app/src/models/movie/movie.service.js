@@ -6,6 +6,7 @@ const Token = require("../Token/Token");
 class Movie {
   async getSeat() {
     try {
+      await movieStorage.deleteExpiredSeats();
       const seat = await movieStorage.getSeat();
       return { sucess: true, msg: "좌석 조회 성공", seat };
     } catch (error) {
@@ -16,6 +17,7 @@ class Movie {
 
   async getUserSeat(accessToken) {
     try {
+      await movieStorage.deleteExpiredSeats();
       const id = await Token.decodeToken(accessToken);
       const userSeat = await movieStorage.getUserSeat(id);
       if (!userSeat.length) {

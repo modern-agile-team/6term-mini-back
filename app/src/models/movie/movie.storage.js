@@ -93,7 +93,7 @@ class movieStorage {
       const params = [userId, movieId];
       const sql = `SELECT * FROM movie_likes WHERE user_id = ? AND movie_id = ?`;
       const resolve = (await db.query(sql, params))[0];
-      if (resolve.length === 0) {
+      if (!resolve.length) {
         return false;
       }
       return resolve;

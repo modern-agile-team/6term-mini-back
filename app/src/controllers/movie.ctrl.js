@@ -2,20 +2,6 @@
 
 const Movie = require("../models/movie/movie.service");
 
-const output = {
-  getmovielike: async (req, res) => {
-    try {
-      const movielike = new Movie();
-      const data = await movielike.getmovielike();
-
-      res.json(data);
-    } catch (error) {
-      console.log(error);
-      return res.json({ success: false, msg: "ctrl.js 오류" });
-    }
-  },
-};
-
 const process = {
   updatemovielike: async (req, res) => {
     try {
@@ -33,4 +19,4 @@ const process = {
   },
 };
 
-module.exports = { output, process };
+module.exports = { process };

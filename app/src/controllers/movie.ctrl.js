@@ -6,7 +6,7 @@ const output = {
   getmovie: async (req, res) => {
     try {
       const movie = new Movie();
-      const data = await movie.getmovie();
+      const data = await movie.getMovie();
       return res.json(data);
     } catch (error) {
       console.log(error);

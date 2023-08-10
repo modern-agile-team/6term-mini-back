@@ -3,20 +3,9 @@
 const movieStorage = require("./movie.storage");
 
 class Movie {
-  async getmovie() {
+  async getMovie() {
     try {
-      const movie = await movieStorage.getmovie();
-
-      const idArray = movie.map((item) => item.id);
-      const movieLike = await Promise.all(
-        idArray.map((id) => movieStorage.getMovielike(id))
-      );
-  
-      const movieInfo = movie.map((item, index) => {
-        const like = movieLike[index][0]?.count || 0;
-        return { ...item, like };
-      });
-
+      const movieInfo = await movieStorage.getMovie();
       return { sucess: true, msg: "영화 조회 성공", movieInfo };
     } catch (error) {
       console.log(error);

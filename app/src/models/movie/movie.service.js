@@ -10,10 +10,10 @@ class Movie {
       const like = await movieStorage.checkUserMovieLike(movieid, userId);
       if (like) {
         await movieStorage.removeMovieLike(movieid, userId);
-        return { success: true, msg: "좋아요를 취소했습니다." };
+        return { success: true, msg: "좋아요를 취소했습니다.", state: false };
       } else {
         await movieStorage.addMovieLike(movieid, userId);
-        return { success: true, msg: "좋아요를 눌렀습니다." };
+        return { success: true, msg: "좋아요를 눌렀습니다.", state: true };
       }
     } catch (error) {
       return { success: false, msg: "좋아요 업데이트 movie.service 오류" };

@@ -3,17 +3,29 @@
 const db = require("../../config/db");
 
 class movieStorage {
-  static async getMovie() {
+  static async getMovie(id) {
     try {
+      const params = [id];
       const sql = `
-            SELECT movie.id AS movie_id,movie.movie_title,movie.movie_poster,movie.movie_runtime,COUNT(movie_likes.id) AS like_count
-            FROM movie
-            LEFT JOIN 
-              movie_likes ON movie.id = movie_likes.movie_id
-            GROUP BY 
-              movie.id, movie.movie_title, movie.movie_poster, movie.movie_runtime;
+        SELECT 
+          movie.id AS movie_id,
+          movie.movie_title,
+          movie.movie_poster,
+          movie.movie_runtime,
+          COUNT(movie_likes.id) AS like_count,
+          IF(liked.likes_count > 0, 1, 0) AS like_status
+        FROM movie
+        LEFT JOIN movie_likes ON movie.id = movie_likes.movie_id
+        LEFT JOIN (
+          SELECT movie_id, COUNT(id) AS likes_count
+          FROM movie_likes
+          WHERE user_id = ?
+          GROUP BY movie_id
+        ) AS liked ON movie.id = liked.movie_id
+        GROUP BY 
+          movie.id, movie.movie_title, movie.movie_poster, movie.movie_runtime;
         `;
-      return (await db.query(sql))[0];
+      return (await db.query(sql, params))[0];
     } catch (error) {
       console.log("getMovie movieStorage 오류 :", error);
       throw error;

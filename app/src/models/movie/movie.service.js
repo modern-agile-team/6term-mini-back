@@ -4,9 +4,10 @@ const movieStorage = require("./movie.storage");
 const Token = require("../Token/Token");
 
 class Movie {
-  async getMovie() {
+  async getMovie(accessToken) {
     try {
-      const movieInfo = await movieStorage.getMovie();
+      const id = await Token.decodeToken(accessToken);
+      const movieInfo = await movieStorage.getMovie(id);
       return { sucess: true, msg: "영화 조회 성공", movieInfo };
     } catch (error) {
       console.log(error);

@@ -4,9 +4,11 @@ const Movie = require("../models/movie/movie.service");
 
 const output = {
   getmovie: async (req, res) => {
+    const accessToken = req.headers.accesstoken;
+
     try {
       const movie = new Movie();
-      const data = await movie.getMovie();
+      const data = await movie.getMovie(accessToken);
       return res.json(data);
     } catch (error) {
       console.log(error);
